@@ -504,11 +504,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Dev\\AirAware\\AirAware\\AirAware.csproj",
+      "projectUniqueName": "C:\\Dev\\AirAware\\backend\\AirAware.csproj",
       "projectName": "AirAware",
-      "projectPath": "C:\\Dev\\AirAware\\AirAware\\AirAware.csproj",
+      "projectPath": "C:\\Dev\\AirAware\\backend\\AirAware.csproj",
       "packagesPath": "C:\\Users\\moritz.johaenning\\.nuget\\packages\\",
-      "outputPath": "C:\\Dev\\AirAware\\AirAware\\obj\\",
+      "outputPath": "C:\\Dev\\AirAware\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
