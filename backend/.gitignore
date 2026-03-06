@@ -15,7 +15,7 @@ x86/
 [Bb]in/
 [Oo]bj/
 # Visual Studio cache/options directory
-vs/
+.vs/
 # MSTest test results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
