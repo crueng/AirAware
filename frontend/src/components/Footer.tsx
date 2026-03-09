@@ -5,17 +5,22 @@ import {
   faClockRotateLeft, 
   faGear, 
   faTemperatureHalf, 
-  faDroplet 
+  faDroplet, 
+  faFileLines
 } from '@fortawesome/free-solid-svg-icons';
 import './Footer.css';
 
 const Footer = () => {
-  const navItems = [
+  const overviewItems = [
     { to: "/", icon: faHouse, label: "Dashboard" },
     { to: "/temperature", icon: faTemperatureHalf, label: "Temperatur" },
     { to: "/humidity", icon: faDroplet, label: "Feuchtigkeit" },
     { to: "/history", icon: faClockRotateLeft, label: "Historie" },
     { to: "/settings", icon: faGear, label: "Einstellungen" },
+  ];
+
+  const infoItems = [
+    { to: "/impressum", icon: faFileLines, label: "Impressum" },
   ];
 
   return (
@@ -24,7 +29,7 @@ const Footer = () => {
         <div className="footer-section">
           <h3 className="footer-heading">Übersicht</h3>
           <div className="footer-links">
-            {navItems.map((item) => (
+            {overviewItems.map((item) => (
               <NavLink 
                 key={item.to}
                 to={item.to} 
@@ -42,12 +47,18 @@ const Footer = () => {
         <div className="footer-section">
           <h3 className="footer-heading">Information</h3>
           <div className="footer-links">
-            <NavLink 
-              to="/impressum" 
-              className={({ isActive }) => isActive ? "tab-item tab-item--active" : "tab-item"}
-            >
-              <span className="tab-item__label">Impressum</span>
-            </NavLink>
+            {infoItems.map((item) => (
+              <NavLink 
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => isActive ? "tab-item tab-item--active" : "tab-item"}
+              >
+                <div className="tab-item__icon-wrapper">
+                  <FontAwesomeIcon icon={item.icon} />
+                </div>
+                <span className="tab-item__label">{item.label}</span>
+              </NavLink>
+            ))}
           </div>
         </div>
       </div>

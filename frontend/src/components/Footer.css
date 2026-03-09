@@ -66,3 +66,27 @@
   flex-direction: column;
   gap: 0.5rem;
 }
+
+/* =========================================
+   MOBILE RESPONSIVE LAYOUT (Handys & Tablets)
+   ========================================= */
+
+@media (max-width: 810px) {
+  .top-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .tab-bar__container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .footer-section {
+    align-items: center;
+  }
+
+  .footer-heading {
+    font-size: 1.8rem;
+  }
+}
