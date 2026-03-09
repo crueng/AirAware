@@ -7,6 +7,9 @@
   gap: 1rem; 
   color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .header-left {
@@ -17,6 +20,12 @@
 
 .menu-btn {
   display: none; 
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.2rem;
+
 }
 
 .menu-btn:hover {
@@ -45,6 +54,7 @@
   opacity: 0.8; 
   transition: opacity 0.2s, border-color 0.2s;
   padding-bottom: 0.2rem; 
+  border-bottom: 2px solid transparent;
 }
 
 .desktop-nav a:hover {
@@ -56,4 +66,46 @@
   font-weight: 500;
   color: var(--primary-color);
   border-bottom: 2px solid var(--primary-color);
+}
+
+/* =========================================
+   MOBILE RESPONSIVE LAYOUT (Handys & Tablets)
+   ========================================= */
+
+@media (max-width: 768px) {
+  .top-header {
+    padding: 1.2rem 1.5rem;
+  }
+
+  .menu-btn {
+    display: block;
+  }
+
+  .desktop-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--navy-900);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+  }
+
+  .desktop-nav.mobile-open {
+    max-height: 300px;
+  }
+
+  .desktop-nav ul {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem 2rem;
+    gap: 1.5rem;
+  }
+
+  .desktop-nav a {
+    display: block;
+    width: 100%;
+    font-size: 1.2rem;
+  }
 }
