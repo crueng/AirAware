@@ -24,6 +24,6 @@ void app_main(void)
 		gpio_set_level(PIN, 1);
 		vTaskDelay(pdMS_TO_TICKS(500));
 		gpio_set_level(PIN, 0);
-		vTaskDelay(pdMS_TO_TICKS(100));
+		vTaskDelay(pdMS_TO_TICKS(200));
     }
 }
