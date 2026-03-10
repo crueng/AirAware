@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AirAware")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60cf3f8b423bbb39fd827d052f0a094cf52750f3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2755f19db0230b20bce3b6a5831ad38861fd8f04")]
 [assembly: System.Reflection.AssemblyProductAttribute("AirAware")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AirAware")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
