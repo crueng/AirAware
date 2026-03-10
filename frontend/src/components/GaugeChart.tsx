@@ -1,25 +1,26 @@
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, ResponsiveContainer } from 'recharts';
+import './GaugeChart.css';
 
 interface GaugeChartProps {
-  value: number;       
-  humidity: number;    
-  min?: number;       
-  max?: number;        
-  label: string;       
+  value: number;     
+  humidity?: number;   
+  min?: number;   
+  max?: number;     
+  label: string;     
 }
 
 const GaugeChart = ({ value, humidity, min = 0, max = 50, label }: GaugeChartProps) => {
-  const data = [
-    { value: Math.max(0, value - min) }, 
-    { value: Math.max(0, max - value) }  
-  ];
-
   const COLORS = ['#EE6C4D', '#E5E7EB']; 
 
+  const data = [
+    { value: Math.max(0, value - min), fill: COLORS[0] }, 
+    { value: Math.max(0, max - value), fill: COLORS[1] } 
+  ];
+
   return (
-    <div className="gauge-wrapper" style={{ width: '100%', height: '250px', position: 'relative' }}>
+    <div className="gauge-wrapper">
       <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
+        <PieChart className='gauge-pie-chart'>
           <Pie
             data={data}
             cx="50%"         
@@ -31,39 +32,20 @@ const GaugeChart = ({ value, humidity, min = 0, max = 50, label }: GaugeChartPro
             paddingAngle={0}
             dataKey="value"
             stroke="none"
-          >
-            {data.map((_entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
+          />
         </PieChart>
       </ResponsiveContainer>
 
-      <div style={{
-        position: 'absolute',
-        top: '65%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        textAlign: 'center',
-        width: '100%'
-      }}>
-        <div style={{ 
-          fontSize: '3.2rem', 
-          fontWeight: '700', 
-          color: 'var(--navy-900)',
-          lineHeight: '1'
-        }}>
+      <div className='gauge-text-container'>
+        <div className='gauge-value'>
           {value.toFixed(1)}{label}
         </div>
         
-        <div style={{ 
-          fontSize: '1.1rem', 
-          color: '#6B7280', 
-          fontWeight: '500',
-          marginTop: '0.5rem'
-        }}>
-          {humidity.toFixed(0)}% Luftfeuchte
-        </div>
+        {humidity !== undefined && (
+            <div className='gauge-humidity'>
+             {humidity.toFixed(0)}% Luftfeuchtigkeit
+         </div>
+        )}
       </div>
     </div>
   );
