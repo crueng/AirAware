@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AirAware")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f6b8a84cf56111db61ff1fce2c8a7f40ac7f935")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8684e903dc3d1b5689a86e320b55c54f75983c9b")]
 [assembly: System.Reflection.AssemblyProductAttribute("AirAware")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AirAware")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
