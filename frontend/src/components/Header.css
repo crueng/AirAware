@@ -1,0 +1,111 @@
+.top-header {
+  background-color: var(--navy-900);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 2rem; 
+  gap: 1rem; 
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menu-btn {
+  display: none; 
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.2rem;
+
+}
+
+.menu-btn:hover {
+  opacity: 0.7; 
+}
+
+.name {
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 1.6rem; 
+  letter-spacing: 0.5px;
+}
+
+.desktop-nav ul {
+  display: flex;
+  list-style: none; 
+  gap: 2.5rem; 
+}
+
+.desktop-nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: 400;
+  font-size: 1.1rem;
+  opacity: 0.8; 
+  transition: opacity 0.2s, border-color 0.2s;
+  padding-bottom: 0.2rem; 
+}
+
+.desktop-nav a:hover {
+  opacity: 1;
+}
+
+.desktop-nav a.active {
+  opacity: 1;
+  font-weight: 500;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+/* =========================================
+   MOBILE RESPONSIVE LAYOUT (Handys & Tablets)
+   ========================================= */
+
+@media (max-width: 810px) {
+  .top-header {
+    padding: 1.2rem 1.5rem;
+  }
+
+  .menu-btn {
+    display: block;
+  }
+
+  .desktop-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--navy-900);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+  }
+
+  .desktop-nav.mobile-open {
+    max-height: 300px;
+  }
+
+  .desktop-nav ul {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem 2rem;
+    gap: 1.5rem;
+  }
+
+  .desktop-nav a {
+    display: block;
+    width: 100%;
+    font-size: 1.2rem;
+    border-bottom: none;
+  }
+}
