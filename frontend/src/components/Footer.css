@@ -1,0 +1,92 @@
+.tab-bar {
+  background: var(--navy-900);
+  padding: 2rem;
+}
+
+.tab-bar__container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: var(--bg-light);
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.tab-item__icon-wrapper {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+  transition: transform 0.3s;
+}
+
+.tab-item__label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tab-item--active {
+  color: var(--primary-color); 
+}
+
+.tab-item:active {
+  transform: scale(0.9); 
+}
+
+.footer-text {
+  text-align: center;
+  color: var(--bg-light);
+  font-size: 0.75rem;
+  margin-top: 1.5rem;
+  opacity: 0.6;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-heading {
+  color: var(--bg-light);
+  font-size: 2.3rem; 
+  font-weight: 600;
+  margin-bottom: 1rem; 
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* =========================================
+   MOBILE RESPONSIVE LAYOUT (Handys & Tablets)
+   ========================================= */
+
+@media (max-width: 810px) {
+  .top-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .tab-bar__container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .footer-section {
+    align-items: center;
+  }
+
+  .footer-heading {
+    font-size: 1.8rem;
+  }
+}
