@@ -10,7 +10,17 @@ interface GaugeChartProps {
 }
 
 const GaugeChart = ({ value, humidity, min = 0, max = 50, label }: GaugeChartProps) => {
-  const COLORS = ['#EE6C4D', '#E5E7EB']; 
+  const getDynamicColor = (currentValue: number) => {
+    if (label !== '°C') return 'var(--primary-color)';
+
+    if (currentValue < 20) return 'var(--temp-cold)';       
+    if (currentValue >= 20 && currentValue <= 30) return 'var(--temp-normal)';
+    return 'var(--temp-hot)';                               
+  };
+
+  const activeColor = getDynamicColor(value);
+
+  const COLORS = [activeColor, 'var(--navy-100)'];
 
   const data = [
     { value: Math.max(0, value - min), fill: COLORS[0] }, 

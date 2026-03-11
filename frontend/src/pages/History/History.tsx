@@ -1,4 +1,4 @@
-import './Pages.css';
+import '../Pages.css';
 import './History.css';
 
 export default function History() {

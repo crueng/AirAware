@@ -5,6 +5,17 @@
   width: 100%;
 }
 
+.dashboard-content {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  width: 100%;
+  max-width: 900px; 
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
 .tacho-card {
   position: relative;
   background-color: white;
@@ -12,14 +23,10 @@
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 600px;
   display: flex;
   justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-.tacho-card:hover {
-  transform: translateY(-5px);
+  min-width: 300px;
+  max-width: unset; 
 }
 
 .live-badge {
@@ -29,7 +36,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  color: #22c55e;
+  color: var(--success-color);
   font-weight: 600;
   font-size: 0.85rem;
   letter-spacing: 0.05em;
@@ -38,14 +45,14 @@
 .live-dot {
   width: 8px;
   height: 8px;
-  background-color: #22c55e;
+  background-color: var(--success-color);
   border-radius: 50%;
   animation: pulse 4s infinite;
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    box-shadow: 0 0 0 0 var(--success-color);
   }
   35% {
     box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); 

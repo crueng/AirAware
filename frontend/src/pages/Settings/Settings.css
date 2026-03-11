@@ -1,0 +1,123 @@
+.settings-card {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 600px;
+}
+
+.settings-title {
+  font-size: 1.2rem;
+  color: var(--navy-900);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.settings-description {
+  font-size: 0.95rem;
+  color: #6B7280;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.settings-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.settings-control label {
+  font-weight: 500;
+  color: var(--navy-700);
+  font-size: 0.9rem;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  user-select: none; 
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background-color: var(--gray-100);
+  border: 1px solid var(--navy-100);
+  border-radius: 10px;
+  color: var(--navy-900);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-header:hover, 
+.dropdown-header.open {
+  border-color: var(--primary-color);
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(238, 108, 77, 0.1);
+}
+
+.dropdown-arrow {
+  color: #6B7280;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+  color: var(--primary-color);
+}
+
+.dropdown-list {
+  position: absolute;
+  top: calc(100% + 8px); 
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid var(--navy-100);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  overflow: hidden;
+  animation: slideDown 0.2s ease forwards;
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  color: #4B5563;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #F3F4F6;
+  color: var(--navy-900);
+}
+
+.dropdown-item.selected {
+  background-color: #F0FDF4;
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.check-icon {
+  color: var(--success-color);
+}
+
+/* Animation Keyframes */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
