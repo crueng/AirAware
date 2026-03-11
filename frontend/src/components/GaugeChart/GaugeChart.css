@@ -22,7 +22,7 @@
 
 .gauge-humidity {
   font-size: 1rem;
-  color: #a7acb6;
+  color: var(--text-footer-color);
   font-weight: 500;
   margin-top: 0.5rem;
 }
