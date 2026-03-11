@@ -1,0 +1,32 @@
+.gauge-wrapper {
+  width: 100%;
+  height: 300px;
+  position: relative;
+}
+
+.gauge-text-container {
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 100%;
+}
+
+.gauge-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  line-height: 1;
+}
+
+.gauge-humidity {
+  font-size: 1rem;
+  color: var(--text-footer-color);
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.gauge-pie-chart {
+  pointer-events: none;
+}
