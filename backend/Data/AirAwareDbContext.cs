@@ -24,5 +24,10 @@ public class AirAwareDbContext(DbContextOptions<AirAwareDbContext> options) : Db
         modelBuilder.Entity<AlertThreshold>()
             .HasIndex(t => t.MetricName)
             .IsUnique();
+
+        // Nur ein Threshold pro SensorType erlaubt
+        modelBuilder.Entity<AlertThreshold>()
+            .HasIndex(t => t.Type)
+            .IsUnique();
     }
 }

@@ -103,14 +103,23 @@ public class SensorReport
     public DateTime From { get; set; }
     public DateTime To { get; set; }
     public int TotalReadings { get; set; }
+    public int TemperatureReadings { get; set; }
+    public int HumidityReadings { get; set; }
 
     public double? AvgTemperatureC { get; set; }
     public double? MinTemperatureC { get; set; }
     public double? MaxTemperatureC { get; set; }
+    public double? MedianTemperatureC { get; set; }
+
+    /// <summary>Berechnete °F-Werte für unsere Amerikanischen Freunde.</summary>
+    public double? AvgTemperatureF { get; set; }
+    public double? MinTemperatureF { get; set; }
+    public double? MaxTemperatureF { get; set; }
 
     public double? AvgHumidityPercent { get; set; }
     public double? MinHumidityPercent { get; set; }
     public double? MaxHumidityPercent { get; set; }
+    public double? MedianHumidityPercent { get; set; }
 
     public int AlertCount { get; set; }
 }
