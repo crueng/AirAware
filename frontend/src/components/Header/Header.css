@@ -48,10 +48,10 @@
 
 .desktop-nav a {
   text-decoration: none;
-  color: white;
+  color: var(--bg-light);
   font-weight: 400;
   font-size: 1.1rem;
-  opacity: 0.8; 
+  opacity: 0.8;
   transition: opacity 0.2s, border-color 0.2s;
   padding-bottom: 0.2rem; 
 }
