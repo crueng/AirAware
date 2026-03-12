@@ -1,0 +1,41 @@
+# ============================================================
+# Cloudflare Tunnel Konfiguration für AirAware API
+# ============================================================
+#
+# SETUP-ANLEITUNG:
+# 1. Cloudflare Tunnel erstellen (falls noch nicht geschehen):
+#    cloudflared tunnel create airaware
+#
+# 2. Tunnel-ID aus dem Output kopieren und unten einsetzen
+#
+# 3. Diese Datei speichern unter:
+#    Windows: C:\Users\<DeinUser>\.cloudflared\config.yml
+#    (oder den Pfad beim Start angeben: cloudflared tunnel --config pfad\config.yml run)
+#
+# 4. DNS-Route einrichten:
+#    cloudflared tunnel route dns airaware api.deine-domain.de
+#
+# 5. Tunnel als Windows-Service installieren (damit er beim Serverstart läuft):
+#    cloudflared service install
+#    (nutzt automatisch die config.yml aus dem .cloudflared Ordner)
+#
+# 6. Service starten:
+#    net start Cloudflared
+#
+# ============================================================
+
+# Deine Tunnel-ID (aus "cloudflared tunnel create" oder Cloudflare Dashboard)
+tunnel: DEINE-TUNNEL-ID-HIER
+
+# Credentials-Datei (wird automatisch bei "tunnel create" erstellt)
+credentials-file: C:\Users\DEIN_USER\.cloudflared\DEINE-TUNNEL-ID-HIER.json
+
+ingress:
+  # AirAware API – leitet Traffic an die lokale Kestrel-Instanz weiter
+  - hostname: api.deine-domain.de
+    service: http://localhost:5000
+    originRequest:
+      noTLSVerify: true
+
+  # Catch-All: Alles andere wird abgelehnt
+  - service: http_status:404
