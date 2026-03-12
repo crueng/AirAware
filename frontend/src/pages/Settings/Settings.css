@@ -1,0 +1,227 @@
+.settings-card {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 600px;
+}
+
+.settings-title {
+  font-size: 1.2rem;
+  color: var(--navy-900);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.settings-description {
+  font-size: 0.95rem;
+  color: var(--text-settings-description);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.settings-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.settings-control label {
+  font-weight: 500;
+  color: var(--navy-700);
+  font-size: 0.9rem;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  user-select: none; 
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background-color: var(--gray-100);
+  border: 1px solid var(--navy-100);
+  border-radius: 10px;
+  color: var(--navy-900);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-header:hover, 
+.dropdown-header.open {
+  border-color: var(--primary-color);
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(238, 108, 77, 0.1);
+}
+
+.dropdown-arrow {
+  color: var(--gray-500);
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+  color: var(--primary-color);
+}
+
+.dropdown-list {
+  position: absolute;
+  top: calc(100% + 8px); 
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid var(--navy-100);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  overflow: hidden;
+  animation: slideDown 0.2s ease forwards;
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  color: var(--gray-600);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #F3F4F6;
+  color: var(--navy-900);
+}
+
+.dropdown-item.selected {
+  background-color: var(--green-100);
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.check-icon {
+  color: var(--success-color);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.thresholds-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.threshold-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.threshold-label {
+  font-weight: 600;
+  color: var(--navy-800);
+  font-size: 0.95rem;
+}
+
+.threshold-inputs {
+  display: flex;
+  gap: 1rem;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--gray-100);
+  border: 1px solid var(--navy-100);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+  width: 140px;
+  flex: 1;
+  min-width: 130px;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--primary-color);
+}
+
+.input-prefix {
+  background-color: var(--gray-100);
+  padding: 0.6rem 0.8rem;
+  color: #6B7280;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-right: 1px solid var(--navy-100);
+}
+
+.threshold-input {
+  border: none;
+  background: transparent;
+  padding: 0.6rem;
+  width: 100%;
+  color: var(--navy-900);
+  font-weight: 500;
+  font-size: 1rem;
+  outline: none;
+  flex-wrap: wrap;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(238, 108, 77, 0.2);
+}
+
+.save-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.save-button:disabled {
+  background-color: #9CA3AF;
+  cursor: not-allowed;
+}
+
+.save-message {
+  color: var(--success-color);
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  animation: fadeSlideIn 0.3s ease-out forwards;
+}
+
+.error-message {
+  color: #ef4444; 
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  animation: fadeSlideIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px); 
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
