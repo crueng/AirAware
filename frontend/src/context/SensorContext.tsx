@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { Endpoints } from '../api';
+import { Endpoints } from '../Api';
 
 interface ApiSensorData {
   type: number;
@@ -22,7 +22,14 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
   const [humidity, setHumidity] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   
-  const [refreshInterval, setRefreshInterval] = useState<number>(5000);
+  const [refreshInterval, setRefreshInterval] = useState<number>(() => {
+    const savedInterval = localStorage.getItem('app_refresh_interval');
+    return savedInterval ? Number(savedInterval) : 5000;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('app_refresh_interval', refreshInterval.toString());
+  }, [refreshInterval]);
 
   useEffect(() => {
     const abortController = new AbortController(); 

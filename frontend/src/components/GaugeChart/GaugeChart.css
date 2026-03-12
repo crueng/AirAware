@@ -1,6 +1,8 @@
 .gauge-wrapper {
   width: 100%;
-  height: 300px;
+  aspect-ratio: 1.6;
+  max-width: 500px; 
+  margin: 0 auto;   
   position: relative;
 }
 
