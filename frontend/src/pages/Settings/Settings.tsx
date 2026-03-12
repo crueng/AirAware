@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSensorData } from '../../context/SensorContext';
-import { Endpoints } from '../../Api'; 
+import { Endpoints } from '../../apiConfig'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faChevronDown,
@@ -231,7 +231,7 @@ const Settings = () => {
       <div className="tacho-card settings-card">
         <h3 className="settings-title">
           <FontAwesomeIcon icon={faBell} style={{ marginRight: '8px', color: 'var(--primary-color)' }} />
-          Alarm-Schwellenwerte
+          Zulässiger Normalbereich
         </h3>
         <p className="settings-description">
           Lege fest, ab welchen Werten das System einen Alarm auslösen soll.

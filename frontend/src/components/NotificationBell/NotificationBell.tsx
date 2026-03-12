@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { Endpoints } from '../../Api'; 
+import { Endpoints } from '../../apiConfig'; 
 import './NotificationBell.css'; 
 
 interface Alert {
@@ -67,12 +67,11 @@ const NotificationBell = () => {
       }
     };
 
-    fetchAlerts(); // Einmal sofort laden
+    fetchAlerts(); 
 
-    // Startet das Intervall EINMAL beim Laden der Komponente (Leeres Dependency Array!)
     const interval = setInterval(fetchAlerts, 10000);
     return () => clearInterval(interval);
-  }, []); // <--- LEER! Keine Endlos-Schleife mehr!
+  }, []); 
 
   const markAsRead = (id: string) => {
     const newReadIds = new Set(readIds);
@@ -105,7 +104,7 @@ const NotificationBell = () => {
 
         {isOpen && (
           <div className="notification-dropdown">
-            <div className="dropdown-header">
+            <div className="notification-header">
               Benachrichtigungen ({unreadCount} neu)
             </div>
 
@@ -135,7 +134,7 @@ const NotificationBell = () => {
               )}
             </div>
 
-            <div className="dropdown-footer">
+            <div className="notification-footer">
               <a href="/alarms">Alle Alarme anzeigen &rarr;</a>
             </div>
           </div>

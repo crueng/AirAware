@@ -2,7 +2,7 @@
   background-color: var(--navy-900);
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Links Logo, Rechts Nav+Glocke */
+  justify-content: space-between; 
   padding: 1.2rem 2rem; 
   color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
@@ -20,7 +20,7 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 2rem; /* Abstand zwischen Navigation und Glocke */
+  gap: 2rem; 
 }
 
 .desktop-nav ul {
@@ -73,6 +73,20 @@
   border-bottom: 2px solid var(--primary-color);
 }
 
+@media (max-width: 1100px) {
+  .desktop-nav ul {
+    gap: 1.2rem; 
+  }
+  
+  .desktop-nav a {
+    font-size: 1rem; 
+  }
+
+  .header-right {
+    gap: 1rem; 
+  }
+}
+
 @media (max-width: 810px) {
   .top-header {
     padding: 1.2rem 1.5rem;
@@ -81,7 +95,7 @@
     display: block;
   }
   .header-right {
-    gap: 1rem; /* Auf dem Handy etwas enger */
+    gap: 1rem; 
   }
   .desktop-nav {
     position: absolute;
