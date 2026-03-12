@@ -1,0 +1,105 @@
+# PostgreSQL Datenbank-Migration: Lokal ? Server
+
+## Voraussetzungen
+- PostgreSQL auf dem Server installiert
+- pgAdmin oder `psql`/`pg_dump` verfügbar
+- Gleicher User (`AirAwareUser`) auf dem Server eingerichtet
+
+---
+
+## Option 1: pg_dump / pg_restore (empfohlen)
+
+### 1. Auf dem lokalen Rechner – Backup erstellen
+
+```powershell
+# Komplettes Backup im custom-Format (komprimiert, flexibel)
+pg_dump -h localhost -U AirAwareUser -d AirAware -Fc -f AirAware_backup.dump
+```
+
+Alternativ als SQL-Textdatei:
+```powershell
+pg_dump -h localhost -U AirAwareUser -d AirAware -f AirAware_backup.sql
+```
+
+### 2. Backup-Datei auf den Server kopieren
+
+Per SCP, RDP, Netzlaufwerk oder USB – die `.dump` / `.sql` Datei auf den Server bringen.
+
+### 3. Auf dem Server – Datenbank + User anlegen
+
+```sql
+-- In psql als postgres-Superuser:
+CREATE USER "AirAwareUser" WITH PASSWORD 'DEIN_SICHERES_PASSWORT';
+CREATE DATABASE "AirAware" OWNER "AirAwareUser";
+GRANT ALL PRIVILEGES ON DATABASE "AirAware" TO "AirAwareUser";
+```
+
+### 4. Backup einspielen
+
+```powershell
+# Custom-Format:
+pg_restore -h localhost -U AirAwareUser -d AirAware --no-owner --no-privileges AirAware_backup.dump
+
+# ODER SQL-Textdatei:
+psql -h localhost -U AirAwareUser -d AirAware -f AirAware_backup.sql
+```
+
+---
+
+## Option 2: pgAdmin GUI
+
+### Export (lokal)
+1. pgAdmin öffnen ? Rechtsklick auf `AirAware` ? **Backup...**
+2. Format: **Custom** (oder **Plain** für SQL)
+3. Dateiname wählen, z.B. `AirAware_backup.dump`
+4. Unter "Data Options": **Include data** = Yes
+5. **Backup** klicken
+
+### Import (Server)
+1. pgAdmin auf dem Server öffnen (oder remote verbinden)
+2. Neue Datenbank `AirAware` anlegen (Owner: `AirAwareUser`)
+3. Rechtsklick auf `AirAware` ? **Restore...**
+4. Backup-Datei auswählen
+5. Unter "Restore Options": **No Owner** = Yes
+6. **Restore** klicken
+
+---
+
+## Nach der Migration
+
+### Connection-String auf dem Server prüfen
+In `appsettings.Production.json`:
+```json
+{
+  "ConnectionStrings": {
+    "AirAwareDb": "Host=localhost;Port=5432;Database=AirAware;Username=AirAwareUser;Password=DEIN_SICHERES_PASSWORT"
+  }
+}
+```
+
+### Schnelltest
+```powershell
+# Auf dem Server – Verbindung testen:
+psql -h localhost -U AirAwareUser -d AirAware -c "SELECT count(*) FROM sensor_readings;"
+```
+
+---
+
+## Sicherheits-Tipps für PostgreSQL auf dem Server
+
+1. **pg_hba.conf** – Nur lokale Verbindungen erlauben (kein remote-Zugriff nötig, da die API lokal läuft):
+   ```
+   # TYPE  DATABASE    USER            ADDRESS     METHOD
+   local   AirAware    AirAwareUser                scram-sha-256
+   host    AirAware    AirAwareUser    127.0.0.1/32 scram-sha-256
+   ```
+
+2. **postgresql.conf** – Nur auf localhost lauschen:
+   ```
+   listen_addresses = 'localhost'
+   ```
+
+3. **Passwort ändern** – Nicht das gleiche Passwort wie lokal verwenden:
+   ```sql
+   ALTER USER "AirAwareUser" WITH PASSWORD 'neues_sicheres_passwort';
+   ```
