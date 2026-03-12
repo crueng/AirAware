@@ -2,6 +2,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .bell-button {
@@ -53,11 +54,13 @@
   color: var(--navy-900); 
 }
 
-.dropdown-header {
+.notification-header {
   padding: 1rem;
   font-weight: 600;
   border-bottom: 1px solid #e5e7eb;
   background-color: #f9fafb;
+  cursor: default; 
+  border-radius: 12px 12px 0 0; 
 }
 
 .alert-list {
@@ -94,20 +97,20 @@
   line-height: 1.4;
 }
 
-.dropdown-footer {
+.notification-footer {
   padding: 0.8rem;
   text-align: center;
   border-top: 1px solid #e5e7eb;
 }
 
-.dropdown-footer a {
+.notification-footer a {
   color: var(--primary-color, #EE6C4D);
   font-weight: 600;
   font-size: 0.9rem;
   text-decoration: none;
 }
 
-.dropdown-footer a:hover {
+.notification-footer a:hover {
   text-decoration: underline;
 }
 
