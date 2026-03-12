@@ -1,0 +1,61 @@
+.humidity-drop-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.drop-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+.drop-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.drop-fill-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  transition: height 1s ease-in-out;
+}
+
+.drop-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 180px;
+  height: 180px;
+}
+
+.drop-bg svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--gray-300); 
+}
+
+.drop-fill svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--navy-700); 
+}
+
+.drop-text-container {
+  text-align: center;
+}
+
+.drop-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  line-height: 1;
+}
