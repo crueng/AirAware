@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
+using AirAware.Attributes;
 using AirAware.Data;
 using AirAware.Helpers;
 using AirAware.Models;
@@ -187,7 +188,9 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// Setzt oder aktualisiert einen Schwellenwert.
     /// Pro SensorType ist nur ein Threshold erlaubt.
     /// Wenn bereits ein Threshold für den gleichen Type existiert, wird er überschrieben.
+    /// Erfordert API-Key im Header (X-Api-Key) in Production.
     /// </summary>
+    [RequireApiKey]
     [HttpPost("thresholds")]
     public async Task<ActionResult<AlertThreshold>> SetThreshold([FromBody] AlertThreshold threshold)
     {
@@ -219,7 +222,9 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
 
     /// <summary>
     /// Löscht den Schwellenwert für einen bestimmten SensorType.
+    /// Erfordert API-Key im Header (X-Api-Key) in Production.
     /// </summary>
+    [RequireApiKey]
     [HttpDelete("thresholds/{type}")]
     public async Task<ActionResult> DeleteThreshold(SensorType type)
     {
@@ -251,7 +256,9 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// <summary>
     /// Generiert 100 Testmessungen (50× Temperatur + 50× Luftfeuchtigkeit) über die letzten ~4 Stunden
     /// und speichert sie in die Datenbank. Sensor-ID ist "esp32-mock".
+    /// Erfordert API-Key im Header (X-Api-Key) in Production.
     /// </summary>
+    [RequireApiKey]
     [HttpPost("mock")]
     public async Task<ActionResult> GenerateMockData()
     {
@@ -289,7 +296,9 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// <summary>
     /// Löscht alle Mock-Daten (sensor_id = "esp32-mock") aus der Datenbank.
     /// Echte ESP32-Daten bleiben erhalten.
+    /// Erfordert API-Key im Header (X-Api-Key) in Production.
     /// </summary>
+    [RequireApiKey]
     [HttpDelete("mock")]
     public async Task<ActionResult> DeleteMockData()
     {

@@ -6,7 +6,6 @@
 
 
 -- workspace / for active querys
-
 select * from sensor_readings
 
 -- einträge des users welche regeln er haben will für den alert
