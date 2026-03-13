@@ -11,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.OperationFilter<ApiKeyOperationFilter>();
+    options.OperationFilter<AdminPinOperationFilter>();
 });
 
 builder.Services.AddDbContext<AirAwareDbContext>(options =>
@@ -61,8 +62,11 @@ app.UseSwaggerUI();
 
 app.UseCors();
 
-// API-Key Middleware für schreibende Endpoints
+// API-Key Middleware für schreibende Endpoints (ESP32)
 app.UseMiddleware<ApiKeyAuthMiddleware>();
+
+// Admin-PIN Middleware für Frontend-Endpoints (Threshold-Verwaltung)
+app.UseMiddleware<AdminPinAuthMiddleware>();
 
 app.MapControllers();
 

@@ -188,9 +188,9 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// Setzt oder aktualisiert einen Schwellenwert.
     /// Pro SensorType ist nur ein Threshold erlaubt.
     /// Wenn bereits ein Threshold für den gleichen Type existiert, wird er überschrieben.
-    /// Erfordert API-Key im Header (X-Api-Key) in Production.
+    /// Erfordert Admin-PIN im Header (X-Admin-Pin) in Production.
     /// </summary>
-    [RequireApiKey]
+    [RequireAdminPin]
     [HttpPost("thresholds")]
     public async Task<ActionResult<AlertThreshold>> SetThreshold([FromBody] AlertThreshold threshold)
     {
@@ -222,9 +222,9 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
 
     /// <summary>
     /// Löscht den Schwellenwert für einen bestimmten SensorType.
-    /// Erfordert API-Key im Header (X-Api-Key) in Production.
+    /// Erfordert Admin-PIN im Header (X-Admin-Pin) in Production.
     /// </summary>
-    [RequireApiKey]
+    [RequireAdminPin]
     [HttpDelete("thresholds/{type}")]
     public async Task<ActionResult> DeleteThreshold(SensorType type)
     {
