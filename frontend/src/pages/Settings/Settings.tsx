@@ -1,240 +1,114 @@
-import { useState, useRef, useEffect } from 'react';
-import { useSensorData } from '../../context/SensorContext';
-import { Endpoints } from '../../apiConfig'; 
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faChevronDown,
-  faCheck,
-  faBell
-} from '@fortawesome/free-solid-svg-icons';
-import '../Pages.css';
-import './Settings.css';
-
-const OPTIONS = [
-  { value: 5000, label: 'Alle 5 Sekunden' },
-  { value: 10000, label: 'Alle 10 Sekunden' },
-  { value: 30000, label: 'Alle 30 Sekunden' },
-  { value: 60000, label: 'Jede Minute' }
-];
+import { faLock, faUnlock, faBell } from '@fortawesome/free-solid-svg-icons';
+// import { Endpoints } from '../apiConfig'; 
 
 const Settings = () => {
-  const { refreshInterval, setRefreshInterval } = useSensorData();
-  
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const [tempMin, setTempMin] = useState<number | string>(20);
-  const [tempMax, setTempMax] = useState<number | string>(40);
-  const [humMin, setHumMin] = useState<number | string>(20);
-  const [humMax, setHumMax] = useState<number | string>(80);
-
-  const lastSavedValues = useRef({
-    tempMin: 20,
-    tempMax: 40,
-    humMin: 20,
-    humMax: 80
-  });
-
+  const [tempMin, setTempMin] = useState('10');
+  const [tempMax, setTempMax] = useState('40');
+  const [humMin, setHumMin] = useState('20');
+  const [humMax, setHumMax] = useState('80');
   const [isSaving, setIsSaving] = useState(false);
   const [thresholdMessage, setThresholdMessage] = useState('');
-  const [intervalMessage, setIntervalMessage] = useState('');
-
   const [thresholdError, setThresholdError] = useState('');
 
-  const selectedOption = OPTIONS.find(opt => opt.value === refreshInterval) || OPTIONS[0];
-
-  useEffect(() => {
-    const fetchThresholds = async () => {
-      try {
-        const response = await fetch(Endpoints.Thresholds);
-        if (response.ok) {
-          const data = await response.json();
-          
-          let fetchedTempMin = 20, fetchedTempMax = 40, fetchedHumMin = 20, fetchedHumMax = 80;
-
-          const tempThreshold = data.find((t: any) => t.type === 0);
-          if (tempThreshold) {
-            fetchedTempMin = tempThreshold.minValue;
-            fetchedTempMax = tempThreshold.maxValue;
-            setTempMin(fetchedTempMin);
-            setTempMax(fetchedTempMax);
-          }
-
-          const humThreshold = data.find((t: any) => t.type === 1);
-          if (humThreshold) {
-            fetchedHumMin = humThreshold.minValue;
-            fetchedHumMax = humThreshold.maxValue;
-            setHumMin(fetchedHumMin);
-            setHumMax(fetchedHumMax);
-          }
-
-          lastSavedValues.current = {
-            tempMin: fetchedTempMin,
-            tempMax: fetchedTempMax,
-            humMin: fetchedHumMin,
-            humMax: fetchedHumMax
-          };
-        }
-      } catch (error) {
-        console.error("Fehler beim Laden der Schwellenwerte:", error);
-      }
-    };
-
-    fetchThresholds();
-  }, []);
-
-  const handleSaveThresholds = async () => {
-    const cleanTempMin = tempMin === '' || isNaN(Number(tempMin)) ? 0 : Number(tempMin);
-    const cleanTempMax = tempMax === '' || isNaN(Number(tempMax)) ? 0 : Number(tempMax);
-    const cleanHumMin  = humMin === ''  || isNaN(Number(humMin))  ? 0 : Number(humMin);
-    const cleanHumMax  = humMax === ''  || isNaN(Number(humMax))  ? 0 : Number(humMax);
-
-    setTempMin(cleanTempMin);
-    setTempMax(cleanTempMax);
-    setHumMin(cleanHumMin);
-    setHumMax(cleanHumMax);
-
-    if (cleanTempMin >= cleanTempMax) {
-      setThresholdError("Temperatur: Der 'Min'-Wert muss kleiner sein als der 'Max'-Wert.");
-      setTimeout(() => setThresholdError(''), 5000);
-      return;
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === 'admin') {
+      setIsLoggedIn(true);
+      setShowLoginPopup(false);
+    } else {
+      alert("Falsches Passwort!");
     }
-
-    if (cleanHumMin >= cleanHumMax) {
-      setThresholdError("Luftfeuchtigkeit: Der 'Min'-Wert muss kleiner sein als der 'Max'-Wert.");
-      setTimeout(() => setThresholdError(''), 5000);
-      return; 
-    }
-    if (
-      cleanTempMin === lastSavedValues.current.tempMin &&
-      cleanTempMax === lastSavedValues.current.tempMax &&
-      cleanHumMin === lastSavedValues.current.humMin &&
-      cleanHumMax === lastSavedValues.current.humMax
-    ) {
-      return; 
-    }
-
-    setIsSaving(true); 
-    setThresholdMessage('');
-    setThresholdError('');
-    
-    try {
-      const resTemp = await fetch(Endpoints.Thresholds, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 0, metricName: "TemperatureC", minValue: cleanTempMin, maxValue: cleanTempMax })
-      });
-
-      if (!resTemp.ok) {
-        const errorText = await resTemp.text();
-        throw new Error(`Temp abgelehnt: ${errorText}`);
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 50));
-
-      const resHum = await fetch(Endpoints.Thresholds, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 1, metricName: "HumidityPercent", minValue: cleanHumMin, maxValue: cleanHumMax })
-      });
-      
-      if (!resHum.ok) {
-        const errorText = await resHum.text();
-        throw new Error(`Hum abgelehnt: ${errorText}`);
-      }
-
-      lastSavedValues.current = {
-        tempMin: cleanTempMin,
-        tempMax: cleanTempMax,
-        humMin: cleanHumMin,
-        humMax: cleanHumMax
-      };
-
-      setThresholdMessage('Erfolgreich gespeichert!');
-      setTimeout(() => setThresholdMessage(''), 3000); 
-
-    } catch (error: any) {
-      console.error("Backend hat Speichern blockiert:", error.message);
-      
-      const errorText = error.message.includes(':') 
-        ? error.message.split(':')[1].trim() 
-        : error.message;
-        
-      setThresholdError(`Ups, da lief was schief: ${errorText}`);
-      setTimeout(() => setThresholdError(''), 5000);
-    } finally {
-      setIsSaving(false);
-    } 
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelect = (value: number) => {
-    if (value === refreshInterval) {
-      setIsOpen(false);
-      return;
-    }
-
-    setRefreshInterval(value);
-    setIsOpen(false); 
-    
-    setIntervalMessage('Aktualisierungsrate gespeichert!');
-    setTimeout(() => setIntervalMessage(''), 3000);
   };
 
   const blockInvalidChars = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'e' || e.key === 'E') {
+    if (['e', 'E', '+', '-'].includes(e.key)) {
       e.preventDefault();
     }
   };
 
+  const handleSaveThresholds = () => {
+    console.log("Speichere...", { tempMin, tempMax, humMin, humMax });
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <div className="dashboard-container">
+        <h2 className="page-title">Einstellungen</h2>
+        
+        <div className="tacho-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <FontAwesomeIcon icon={faLock} size="3x" color="#9CA3AF" style={{ marginBottom: '1rem' }} />
+          <h3 style={{ color: 'var(--navy-900)', marginBottom: '0.5rem' }}>Einstellungen gesperrt</h3>
+          <p style={{ color: '#6B7280', marginBottom: '2rem' }}>
+            Bitte melde dich an, um die Alarm-Schwellenwerte und Systemkonfigurationen zu ändern.
+          </p>
+          <button 
+            className="save-button" 
+            onClick={() => setShowLoginPopup(true)}
+            style={{ width: 'auto', padding: '0.8rem 2rem' }}
+          >
+            Jetzt anmelden
+          </button>
+        </div>
+
+        {showLoginPopup && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3 style={{ marginTop: 0, color: 'var(--navy-900)' }}>Admin Login</h3>
+              <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+                <input 
+                  type="text" 
+                  placeholder="Benutzername" 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="threshold-input" 
+                  style={{ border: '1px solid #ccc', borderRadius: '8px' }}
+                />
+                <input 
+                  type="password" 
+                  placeholder="Passwort" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="threshold-input"
+                  style={{ border: '1px solid #ccc', borderRadius: '8px' }}
+                />
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                  <button type="button" className="cancel-button" onClick={() => setShowLoginPopup(false)}>Abbrechen</button>
+                  <button type="submit" className="save-button" style={{ flex: 1 }}>Einloggen</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard-container">
-      <h2 className="page-title">Einstellungen</h2>
-      
-      <div className="tacho-card settings-card" style={{ marginBottom: '2rem' }}>
-        <h3 className="settings-title">Daten-Aktualisierung</h3>
-        <p className="settings-description">
-          Lege fest, wie oft das Dashboard neue Sensorwerte vom Server abrufen soll.
-        </p>
-        
-        <div className="settings-control">
-          <label>Aktualisierungsrate:</label>
-          <div className="custom-dropdown" ref={dropdownRef}>
-            <div className={`dropdown-header ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)}>
-              <span>{selectedOption.label}</span>
-              <FontAwesomeIcon icon={faChevronDown} className={`dropdown-arrow ${isOpen ? 'open' : ''}`} />
-            </div>
-            {isOpen && (
-              <div className="dropdown-list">
-                {OPTIONS.map((option) => (
-                  <div key={option.value} className={`dropdown-item ${refreshInterval === option.value ? 'selected' : ''}`} onClick={() => handleSelect(option.value)}>
-                    {option.label}
-                    {refreshInterval === option.value && <FontAwesomeIcon icon={faCheck} className="check-icon" />}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          {intervalMessage && <span className="save-message" style={{ display: 'block', marginTop: '0.5rem' }}>{intervalMessage}</span>}
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h2 className="page-title" style={{ marginBottom: 0 }}>Einstellungen</h2>
+        <button 
+          onClick={() => setIsLoggedIn(false)} 
+          style={{ background: 'none', border: 'none', color: '#6B7280', cursor: 'pointer', fontWeight: 600 }}
+        >
+          <FontAwesomeIcon icon={faUnlock} /> Logout
+        </button>
       </div>
-
-      <div className="tacho-card settings-card">
+      
+       <div className="tacho-card settings-card">
         <h3 className="settings-title">
           <FontAwesomeIcon icon={faBell} style={{ marginRight: '8px', color: 'var(--primary-color)' }} />
           Zulässiger Normalbereich
         </h3>
         <p className="settings-description">
-          Lege fest, ab welchen Werten das System einen Alarm auslösen soll.
+          Werte außerhalb dieses Bereichs lösen automatisch einen Alarm aus.
         </p>
         
         <div className="thresholds-container">
@@ -301,7 +175,6 @@ const Settings = () => {
           {thresholdError && <span className="error-message">{thresholdError}</span>}
         </div>
       </div>
-
     </div>
   );
 };
