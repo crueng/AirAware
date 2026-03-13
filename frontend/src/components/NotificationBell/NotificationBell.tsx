@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { Endpoints } from '../../apiConfig'; 
+// import { Endpoints } from '../../apiConfig'; 
 import './NotificationBell.css'; 
 
 interface Alert {
@@ -42,36 +42,62 @@ const NotificationBell = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // useEffect(() => {
+  //   const fetchAlerts = async () => {
+  //     try {
+  //       const response = await fetch(Endpoints.Alerts);
+  //       if (response.ok) {
+  //         const data: Alert[] = await response.json();
+  //         const sortedData = data.sort((a, b) => new Date(b.triggeredAt).getTime() - new Date(a.triggeredAt).getTime());
+  //         setAlerts(sortedData);
+
+  //         if (sortedData.length > 0) {
+  //           const newestAlert = sortedData[0];
+  //           const isUnread = !readIdsRef.current.has(newestAlert.id);
+  //           const isRecent = (new Date().getTime() - new Date(newestAlert.triggeredAt).getTime()) < 120000; 
+
+  //           if (isUnread && isRecent && (!livePopupRef.current || livePopupRef.current.id !== newestAlert.id)) {
+  //             setLivePopup(newestAlert);
+  //             setTimeout(() => setLivePopup(null), 6000);
+  //           }
+  //         }
+  //       }
+  //      } catch (error) {
+  //       console.error("Fehler beim Laden der Alarme:", error);
+  //     }
+  //   };
+
+  //   fetchAlerts(); 
+
+  //   const interval = setInterval(fetchAlerts, 10000);
+  //   return () => clearInterval(interval);
+  // }, []); 
+
   useEffect(() => {
-    const fetchAlerts = async () => {
-      try {
-        const response = await fetch(Endpoints.Alerts);
-        if (response.ok) {
-          const data: Alert[] = await response.json();
-          const sortedData = data.sort((a, b) => new Date(b.triggeredAt).getTime() - new Date(a.triggeredAt).getTime());
-          setAlerts(sortedData);
+    const fakeInterval = setInterval(() => {
+      const isTemp = Math.random() > 0.5;
+      const fakeValue = isTemp ? (Math.random() * 10 + 30).toFixed(1) + "°C" : (Math.random() * 20 + 70).toFixed(0) + "%";
+      
+      const newFakeAlert: Alert = {
+        id: `fake-${Date.now()}`,
+        message: `🚨 Wert außerhalb des zulässigen Bereichs! Gemessen: ${fakeValue}`,
+        triggeredAt: new Date().toISOString()
+      };
 
-          if (sortedData.length > 0) {
-            const newestAlert = sortedData[0];
-            const isUnread = !readIdsRef.current.has(newestAlert.id);
-            const isRecent = (new Date().getTime() - new Date(newestAlert.triggeredAt).getTime()) < 120000; 
+      setAlerts(prevAlerts => {
+        const newList = [newFakeAlert, ...prevAlerts];
+        return newList.slice(0, 10); 
+      });
 
-            if (isUnread && isRecent && (!livePopupRef.current || livePopupRef.current.id !== newestAlert.id)) {
-              setLivePopup(newestAlert);
-              setTimeout(() => setLivePopup(null), 6000);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Fehler beim Laden der Alarme:", error);
-      }
-    };
+      setLivePopup(newFakeAlert);
+      
+      setTimeout(() => setLivePopup(null), 6000);
 
-    fetchAlerts(); 
+      console.log("🚨 Fake-Alarm generiert!");
+    }, 12000);
 
-    const interval = setInterval(fetchAlerts, 10000);
-    return () => clearInterval(interval);
-  }, []); 
+    return () => clearInterval(fakeInterval);
+  }, []);
 
   const markAsRead = (id: string) => {
     const newReadIds = new Set(readIds);
