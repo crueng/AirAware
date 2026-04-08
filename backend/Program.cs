@@ -1,5 +1,7 @@
+using AirAware.Configuration;
 using AirAware.Data;
 using AirAware.Middleware;
+using AirAware.Services;
 using AirAware.Swagger;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +18,10 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<AirAwareDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AirAwareDb")));
+
+// MQTT: Konfiguration binden und Hintergrund-Service registrieren
+builder.Services.Configure<MqttOptions>(builder.Configuration.GetSection(MqttOptions.SectionName));
+builder.Services.AddHostedService<MqttSubscriberService>();
 
 // CORS: In Development alles erlauben, in Production nur konfigurierte Origins
 builder.Services.AddCors(options =>
