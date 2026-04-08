@@ -10,8 +10,8 @@
 #include "esp_event.h"
 #include "esp_log.h"
 
-#define WIFI_SSID      "SSID"
-#define WIFI_PASSWORD  "Netzwerkschlüssel"
+#define WIFI_SSID      "CIphone"
+#define WIFI_PASSWORD  "connor123"
 #define MAX_RETRY      5
 
 static EventGroupHandle_t wifi_event_group;
