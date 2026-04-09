@@ -1,9 +1,7 @@
 using System.Text;
 using AirAware.Configuration;
 using AirAware.Data;
-using AirAware.Middleware;
 using AirAware.Services;
-using AirAware.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,8 +15,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.OperationFilter<ApiKeyOperationFilter>();
-    options.OperationFilter<AdminPinOperationFilter>();
 
     // JWT Bearer Token in Swagger UI
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -119,12 +115,6 @@ app.UseCors();
 // JWT-Bearer-Authentifizierung
 app.UseAuthentication();
 app.UseAuthorization();
-
-// API-Key Middleware für schreibende Endpoints (ESP32)
-app.UseMiddleware<ApiKeyAuthMiddleware>();
-
-// Admin-PIN Middleware für Frontend-Endpoints (Threshold-Verwaltung)
-app.UseMiddleware<AdminPinAuthMiddleware>();
 
 app.MapControllers();
 
