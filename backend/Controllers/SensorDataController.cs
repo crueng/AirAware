@@ -4,6 +4,7 @@ using AirAware.Attributes;
 using AirAware.Data;
 using AirAware.Helpers;
 using AirAware.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -190,6 +191,7 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// Wenn bereits ein Threshold für den gleichen Type existiert, wird er überschrieben.
     /// Erfordert Admin-PIN im Header (X-Admin-Pin) in Production.
     /// </summary>
+    [Authorize]
     [RequireAdminPin]
     [HttpPost("thresholds")]
     public async Task<ActionResult<AlertThreshold>> SetThreshold([FromBody] AlertThreshold threshold)
@@ -224,6 +226,7 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// Löscht den Schwellenwert für einen bestimmten SensorType.
     /// Erfordert Admin-PIN im Header (X-Admin-Pin) in Production.
     /// </summary>
+    [Authorize]
     [RequireAdminPin]
     [HttpDelete("thresholds/{type}")]
     public async Task<ActionResult> DeleteThreshold(SensorType type)
