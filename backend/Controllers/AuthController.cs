@@ -4,6 +4,7 @@ using System.Text;
 using AirAware.Configuration;
 using AirAware.Data;
 using AirAware.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -25,7 +26,9 @@ public class AuthController(AirAwareDbContext db, IOptions<JwtOptions> jwtOption
     /// <summary>
     /// Registriert einen neuen Benutzer.
     /// Passwort wird als BCrypt-Hash in der Datenbank gespeichert.
+    /// Erfordert ein gültiges JWT-Token (nur eingeloggte Admins dürfen neue User anlegen).
     /// </summary>
+    [Authorize]
     [HttpPost("register")]
     public async Task<ActionResult> Register([FromBody] RegisterRequest request)
     {

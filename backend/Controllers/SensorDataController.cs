@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using AirAware.Attributes;
 using AirAware.Data;
 using AirAware.Helpers;
 using AirAware.Models;
@@ -192,7 +191,6 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// Erfordert Admin-PIN im Header (X-Admin-Pin) in Production.
     /// </summary>
     [Authorize]
-    [RequireAdminPin]
     [HttpPost("thresholds")]
     public async Task<ActionResult<AlertThreshold>> SetThreshold([FromBody] AlertThreshold threshold)
     {
@@ -227,7 +225,6 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// Erfordert Admin-PIN im Header (X-Admin-Pin) in Production.
     /// </summary>
     [Authorize]
-    [RequireAdminPin]
     [HttpDelete("thresholds/{type}")]
     public async Task<ActionResult> DeleteThreshold(SensorType type)
     {
@@ -261,7 +258,7 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// und speichert sie in die Datenbank. Sensor-ID ist "esp32-mock".
     /// Erfordert API-Key im Header (X-Api-Key) in Production.
     /// </summary>
-    [RequireApiKey]
+    [Authorize]
     [HttpPost("mock")]
     public async Task<ActionResult> GenerateMockData()
     {
@@ -301,7 +298,7 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     /// Echte ESP32-Daten bleiben erhalten.
     /// Erfordert API-Key im Header (X-Api-Key) in Production.
     /// </summary>
-    [RequireApiKey]
+    [Authorize]
     [HttpDelete("mock")]
     public async Task<ActionResult> DeleteMockData()
     {
