@@ -46,10 +46,27 @@ public class MqttSubscriberService(
             }
         };
 
-        await ConnectAsync(stoppingToken);
+        await ConnectWithRetryAsync(stoppingToken);
 
         // Service läuft so lange die App lebt
         await Task.Delay(Timeout.Infinite, stoppingToken);
+    }
+
+    private async Task ConnectWithRetryAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            try
+            {
+                await ConnectAsync(ct);
+                return;
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "MQTT-Broker nicht erreichbar. Erneuter Versuch in 10 Sekunden...");
+                await Task.Delay(TimeSpan.FromSeconds(10), ct);
+            }
+        }
     }
 
     private async Task ConnectAsync(CancellationToken ct)

@@ -8,6 +8,7 @@ public class AirAwareDbContext(DbContextOptions<AirAwareDbContext> options) : Db
     public DbSet<SensorReading> SensorReadings => Set<SensorReading>();
     public DbSet<AlertThreshold> AlertThresholds => Set<AlertThreshold>();
     public DbSet<Alert> Alerts => Set<Alert>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +29,11 @@ public class AirAwareDbContext(DbContextOptions<AirAwareDbContext> options) : Db
         // Nur ein Threshold pro SensorType erlaubt
         modelBuilder.Entity<AlertThreshold>()
             .HasIndex(t => t.Type)
+            .IsUnique();
+
+        // Username muss eindeutig sein
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
             .IsUnique();
     }
 }
