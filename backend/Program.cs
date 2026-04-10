@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using AirAware.Configuration;
 using AirAware.Data;
@@ -45,6 +46,7 @@ builder.Services.AddHostedService<MqttSubscriberService>();
 // JWT: Konfiguration binden und Authentication registrieren
 var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);
 builder.Services.Configure<JwtOptions>(jwtSection);
+builder.Services.AddSingleton<TokenBlacklistService>();
 
 var jwtOptions = jwtSection.Get<JwtOptions>()!;
 builder.Services.AddAuthentication(options =>
@@ -63,6 +65,22 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtOptions.Issuer,
         ValidAudience = jwtOptions.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            var blacklist = context.HttpContext.RequestServices.GetRequiredService<TokenBlacklistService>();
+            var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+
+            if (jti is not null && blacklist.IsRevoked(jti))
+            {
+                context.Fail("Token wurde widerrufen.");
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 builder.Services.AddAuthorization();
