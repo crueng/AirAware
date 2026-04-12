@@ -17,7 +17,7 @@
 #include <stdint.h>
 
 #define EXAMPLE_ESP_WIFI_CHANNEL 2
-#define EXAMPLE_ESP_WIFI_SSID "ESP32-S3"
+#define EXAMPLE_ESP_WIFI_SSID "ESP32"
 #define EXAMPLE_ESP_WIFI_PASS ""
 #define EXAMPLE_MAX_STA_CONN 5
 
