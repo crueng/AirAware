@@ -1,0 +1,188 @@
+.alarms-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.mark-read-btn {
+  background-color: transparent;
+  border: 1px solid #D1D5DB;
+  color: var(--navy-700);
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.mark-read-btn:hover {
+  background-color: #F3F4F6;
+  color: var(--navy-900);
+}
+
+.alarm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #F3F4F6;
+}
+
+.stat-icon-wrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.total-icon {
+  background-color: #FEE2E2;
+  color: #EF4444;
+}
+
+.temp-icon {
+  background-color: #FFEDD5; 
+  color: #F97316;
+}
+
+.hum-icon {
+  background-color: #DBEAFE; 
+  color: #3B82F6;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6B7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.2rem;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.alarms-list-card {
+  padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.alarms-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.alarm-row {
+  display: flex;
+  align-items: center;
+  padding: 1.2rem;
+  border-bottom: 1px solid #E5E7EB;
+  gap: 1.5rem;
+  transition: background-color 0.2s;
+}
+
+.alarm-row:last-child {
+  border-bottom: none;
+}
+
+.alarm-row:hover {
+  background-color: #F9FAFB;
+}
+
+.unread-row {
+  background-color: #FEF2F2;
+}
+
+.unread-row:hover {
+  background-color: #FEE2E2;
+}
+
+.alarm-row-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.alarm-row-icon.temperature {
+  background-color: #FFEDD5;
+  color: #F97316;
+}
+
+.alarm-row-icon.humidity {
+  background-color: #DBEAFE;
+  color: #3B82F6;
+}
+
+.alarm-row-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.alarm-row-message {
+  font-weight: 600;
+  color: var(--navy-900);
+  font-size: 1rem;
+}
+
+.alarm-row-time {
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+.alarm-delete-btn {
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.alarm-delete-btn:hover {
+  background-color: #E5E7EB;
+  color: #EF4444;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #6B7280;
+  font-style: italic;
+}

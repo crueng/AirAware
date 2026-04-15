@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlock, faBell } from '@fortawesome/free-solid-svg-icons';
-// import { Endpoints } from '../apiConfig'; 
+import LoginPopup from '../../components/LoginPopup/Login';
+import './Settings.css'; 
 
 const Settings = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
   const [tempMin, setTempMin] = useState('10');
   const [tempMax, setTempMax] = useState('40');
   const [humMin, setHumMin] = useState('20');
@@ -16,16 +14,6 @@ const Settings = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [thresholdMessage, setThresholdMessage] = useState('');
   const [thresholdError, setThresholdError] = useState('');
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === 'admin') {
-      setIsLoggedIn(true);
-      setShowLoginPopup(false);
-    } else {
-      alert("Falsches Passwort!");
-    }
-  };
 
   const blockInvalidChars = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (['e', 'E', '+', '-'].includes(e.key)) {
@@ -37,54 +25,33 @@ const Settings = () => {
     console.log("Speichere...", { tempMin, tempMax, humMin, humMax });
   };
 
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    setShowLoginPopup(false);
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="dashboard-container">
         <h2 className="page-title">Einstellungen</h2>
         
-        <div className="tacho-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-          <FontAwesomeIcon icon={faLock} size="3x" color="#9CA3AF" style={{ marginBottom: '1rem' }} />
-          <h3 style={{ color: 'var(--navy-900)', marginBottom: '0.5rem' }}>Einstellungen gesperrt</h3>
-          <p style={{ color: '#6B7280', marginBottom: '2rem' }}>
-            Bitte melde dich an, um die Alarm-Schwellenwerte und Systemkonfigurationen zu ändern.
-          </p>
-          <button 
-            className="save-button" 
-            onClick={() => setShowLoginPopup(true)}
-            style={{ width: 'auto', padding: '0.8rem 2rem' }}
-          >
+        <div className="locked-container">
+          <FontAwesomeIcon icon={faLock} size="2x" className="locked-icon" />
+          <div className="locked-text-wrapper">
+            <h3 className="locked-title">Einstellungen gesperrt</h3>
+            <p className="locked-description">
+              Bitte melde dich an, um die Alarm-Schwellenwerte und Systemkonfigurationen zu ändern.
+            </p>
+          </div>
+          <button className="save-button locked-btn" onClick={() => setShowLoginPopup(true)}>
             Jetzt anmelden
           </button>
         </div>
-
         {showLoginPopup && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <h3 style={{ marginTop: 0, color: 'var(--navy-900)' }}>Admin Login</h3>
-              <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-                <input 
-                  type="text" 
-                  placeholder="Benutzername" 
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="threshold-input" 
-                  style={{ border: '1px solid #ccc', borderRadius: '8px' }}
-                />
-                <input 
-                  type="password" 
-                  placeholder="Passwort" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="threshold-input"
-                  style={{ border: '1px solid #ccc', borderRadius: '8px' }}
-                />
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                  <button type="button" className="cancel-button" onClick={() => setShowLoginPopup(false)}>Abbrechen</button>
-                  <button type="submit" className="save-button" style={{ flex: 1 }}>Einloggen</button>
-                </div>
-              </form>
-            </div>
-          </div>
+          <LoginPopup 
+            onClose={() => setShowLoginPopup(false)} 
+            onSuccess={handleLoginSuccess} 
+          />
         )}
       </div>
     );
@@ -96,7 +63,7 @@ const Settings = () => {
         <h2 className="page-title" style={{ marginBottom: 0 }}>Einstellungen</h2>
         <button 
           onClick={() => setIsLoggedIn(false)} 
-          style={{ background: 'none', border: 'none', color: '#6B7280', cursor: 'pointer', fontWeight: 600 }}
+          style={{ background: 'none', border: 'none', color: '#6B7280', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
           <FontAwesomeIcon icon={faUnlock} /> Logout
         </button>
