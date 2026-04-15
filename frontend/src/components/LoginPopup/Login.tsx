@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Login.css';
+import { useAuth } from '../../context/AuthContext';
 
 interface LoginPopupProps {
   onClose: () => void;
@@ -9,13 +10,22 @@ interface LoginPopupProps {
 const LoginPopup = ({ onClose, onSuccess }: LoginPopupProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const { login } = useAuth(); 
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'Umweltvergasung2000!#Siuu') {
+    setIsLoading(true);
+    
+    const success = await login(username, password);
+    
+    setIsLoading(false);
+
+    if (success) {
       onSuccess();
     } else {
-      alert("Falsches Passwort!");
+      alert("Login fehlgeschlagen! Bitte überprüfe Benutzernamen und Passwort.");
     }
   };
 
@@ -50,9 +60,9 @@ const LoginPopup = ({ onClose, onSuccess }: LoginPopupProps) => {
             <button type="button" className="cancel-button" onClick={onClose}>
               Abbrechen
             </button>
-            <button type="submit" className="save-button popup-submit-btn">
-              Einloggen
-            </button>
+            <button type="submit" disabled={isLoading} className="save-button popup-submit-btn">
+              {isLoading ? "Lädt..." : "Einloggen"}
+           </button>
           </div>
         </form>
 

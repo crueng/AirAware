@@ -5,6 +5,12 @@
   margin-bottom: 2rem;
   flex-wrap: wrap;
   gap: 1rem;
+  width: 100%;
+}
+
+.alarms-header-row .page-title {
+  text-align: left;
+  margin: 0;
 }
 
 .mark-read-btn {
@@ -32,6 +38,7 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2.5rem;
+  width: 100%;
 }
 
 .stat-card {
@@ -93,11 +100,19 @@
   padding: 2rem;
   width: 100%;
   box-sizing: border-box;
+  align-items: stretch;
+  text-align: left;
+}
+
+.alarms-list-card .settings-title {
+  text-align: left;
+  margin-bottom: 1.5rem;
 }
 
 .alarms-list {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .alarm-row {
