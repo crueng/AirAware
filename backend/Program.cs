@@ -113,6 +113,9 @@ var app = builder.Build();
 // In Production: Forwarded Headers von Cloudflare verarbeiten,
 // damit die App die echte Client-IP kennt
 if (!app.Environment.IsDevelopment())
+// In Production: Forwarded Headers von Cloudflare verarbeiten,
+// damit die App die echte Client-IP kennt
+if (!app.Environment.IsDevelopment())
 {
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
@@ -121,15 +124,31 @@ if (!app.Environment.IsDevelopment())
     });
 
     // HTTPS-Redirect wird von Cloudflare am Edge gemacht ("Always Use HTTPS"),
-    // daher hier NICHT UseHttpsRedirection() verwenden – sonst Redirect-Loop!
+    // daher hier NICHT UseHttpsRedirection() verwenden ï¿½ sonst Redirect-Loop!
 }
 
-// Swagger auch in Production verfügbar (mit API-Key geschützte Endpoints testen)
+// Swagger auch in Production verfï¿½gbar (mit API-Key geschï¿½tzte Endpoints testen)
+app.UseSwagger();
+app.UseSwaggerUI();
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+                         | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+    });
+
+    // HTTPS-Redirect wird von Cloudflare am Edge gemacht ("Always Use HTTPS"),
+    // daher hier NICHT UseHttpsRedirection() verwenden ï¿½ sonst Redirect-Loop!
+}
+
+// Swagger auch in Production verfï¿½gbar (mit API-Key geschï¿½tzte Endpoints testen)
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors();
+app.UseCors();
 
+// JWT-Bearer-Authentifizierung
+app.UseAuthentication();
 // JWT-Bearer-Authentifizierung
 app.UseAuthentication();
 app.UseAuthorization();
