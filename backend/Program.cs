@@ -138,7 +138,7 @@ app.UseSwaggerUI();
 
     // HTTPS-Redirect wird von Cloudflare am Edge gemacht ("Always Use HTTPS"),
     // daher hier NICHT UseHttpsRedirection() verwenden � sonst Redirect-Loop!
-}
+
 
 // Swagger auch in Production verf�gbar (mit API-Key gesch�tzte Endpoints testen)
 app.UseSwagger();
