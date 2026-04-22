@@ -1,14 +1,16 @@
-//
-// Created by Connor on 10.03.2026.
-//
+#pragma once
+#include "esp_http_server.h"
 
-#ifndef AIRAWARE_WIFI_H
-#define AIRAWARE_WIFI_H
+void wifi_event_handler(void *arg, esp_event_base_t base, int32_t event_id, void *event_data);
 
-#endif // AIRAWARE_WIFI_H
+esp_err_t root_handler(httpd_req_t *req);
 
-#include "esp_event.h"
+esp_err_t scan_handler(httpd_req_t *req);
 
-static void event_handler(void *arg, esp_event_base_t event_base,
-						   int32_t event_id, void *event_data);
-void wifi_init_sta(void);
+esp_err_t connect_handler(httpd_req_t *req);
+
+httpd_handle_t start_webserver(void);
+
+void wifi_init_softap(void);
+
+bool try_saved_credentials(void);
