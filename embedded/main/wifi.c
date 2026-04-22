@@ -13,7 +13,6 @@
 //#include "dns_server.h"  // Captive Portal DNS
 
 #include "wifi.h"
-
 // Konfiguration
 #define AP_SSID        "ESP32-Setup"
 #define AP_PASSWORD    ""       // Min. 8 Zeichen, oder "" für open
