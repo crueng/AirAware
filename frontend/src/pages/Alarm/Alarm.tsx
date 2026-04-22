@@ -1,136 +1,91 @@
-import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTemperatureHigh,
-  faTint,
-  faExclamationTriangle,
+import { useState, useEffect, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faTemperatureHigh, 
+  faTint, 
+  faExclamationTriangle, 
   faCheckDouble,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { Endpoints } from "../../apiConfig";
-import { useAuth } from "../../context/AuthContext";
-import "./Alarm.css";
+  faTrash
+} from '@fortawesome/free-solid-svg-icons';
+import { Endpoints } from '../../apiConfig'; 
+import './Alarm.css';
 
-interface Reading {
-  temperatureC: number | null;
-  humidityPercent: number | null;
-}
-
-interface Threshold {
-  minValue: number;
-  maxValue: number;
-}
-
-interface Alarm {
+interface ApiAlert {
   id: string;
+  message: string;
   triggeredAt: string;
-  reading: Reading;
-  threshold: Threshold;
-  isRead?: boolean;
+  threshold: {
+    metricName: string;
+  };
 }
-
-const getLocalReadIds = (): string[] =>
-  JSON.parse(localStorage.getItem("read_alarms") || "[]");
-const getLocalDeletedIds = (): string[] =>
-  JSON.parse(localStorage.getItem("deleted_alarms") || "[]");
 
 const Alarms = () => {
-  const [alarms, setAlarms] = useState<Alarm[]>([]);
+  const [alarms, setAlarms] = useState<ApiAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { token } = useAuth();
+
+  const [readIds, setReadIds] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('read_alarms');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('deleted_alarms');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  const deletedIdsRef = useRef(deletedIds);
+  useEffect(() => { deletedIdsRef.current = deletedIds; }, [deletedIds]);
 
   useEffect(() => {
-    const fetchRealAlarms = async () => {
+    const fetchAlarms = async () => {
       try {
-        const response = await fetch(Endpoints.Alerts, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
+        const response = await fetch(Endpoints.Alerts);
+        
         if (response.ok) {
-          const data: any[] = await response.json();
-          const readIds = getLocalReadIds();
-          const deletedIds = getLocalDeletedIds();
-
-          const processedData: Alarm[] = data
-            .filter((a: Alarm) => !deletedIds.includes(a.id))
-            .map((a: Alarm) => ({
-              ...a,
-              isRead: a.isRead || readIds.includes(a.id),
-            }))
-            .sort(
-              (a: Alarm, b: Alarm) =>
-                new Date(b.triggeredAt).getTime() -
-                new Date(a.triggeredAt).getTime(),
-            );
-
-          setAlarms(processedData);
-        } else {
-          console.error("Fehler beim Laden. Status:", response.status);
+          const data: ApiAlert[] = await response.json();
+          const activeAlerts = data.filter(alert => !deletedIdsRef.current.has(alert.id));
+          const sortedData = activeAlerts.sort((a, b) => new Date(b.triggeredAt).getTime() - new Date(a.triggeredAt).getTime());
+          
+          setAlarms(sortedData);
         }
       } catch (error) {
-        console.error("Netzwerkfehler:", error);
+        console.error("Fehler beim Laden der Alarme:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (token) {
-      fetchRealAlarms();
-    } else {
-      setIsLoading(false);
-    }
-  }, [token]);
+    fetchAlarms();
+    const interval = setInterval(fetchAlarms, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const tempAlertsCount = alarms.filter(
-    (a) => a.reading.temperatureC !== null,
-  ).length;
-  const humAlertsCount = alarms.filter(
-    (a) => a.reading.humidityPercent !== null,
-  ).length;
-  const unreadCount = alarms.filter((a) => !a.isRead).length;
+  const tempAlertsCount = alarms.filter(a => a.threshold?.metricName === 'TemperatureC').length;
+  const humAlertsCount = alarms.filter(a => a.threshold?.metricName !== 'TemperatureC').length;
+  const unreadCount = alarms.filter(a => !readIds.has(a.id)).length;
 
   const markAllAsRead = () => {
-    const readIds = getLocalReadIds();
-    const newAlarms = alarms.map((alarm) => {
-      if (!readIds.includes(alarm.id)) readIds.push(alarm.id);
-      return { ...alarm, isRead: true };
-    });
-    localStorage.setItem("read_alarms", JSON.stringify(readIds));
-    setAlarms(newAlarms);
+    const newReadIds = new Set(readIds);
+    alarms.forEach(a => newReadIds.add(a.id)); // Alle aktuellen IDs hinzufügen
+    setReadIds(newReadIds);
+    localStorage.setItem('read_alarms', JSON.stringify(Array.from(newReadIds)));
   };
 
   const removeAlarm = (id: string) => {
-    const deletedIds = getLocalDeletedIds();
-    if (!deletedIds.includes(id)) {
-      localStorage.setItem(
-        "deleted_alarms",
-        JSON.stringify([...deletedIds, id]),
-      );
-    }
-    setAlarms(alarms.filter((alarm) => alarm.id !== id));
+    const newDeletedIds = new Set(deletedIds);
+    newDeletedIds.add(id);
+    setDeletedIds(newDeletedIds);
+    localStorage.setItem('deleted_alarms', JSON.stringify(Array.from(newDeletedIds)));
+    
+    setAlarms(prev => prev.filter(a => a.id !== id));
   };
 
-  const formatAlarmText = (alert: Alarm) => {
-    const temp = alert.reading.temperatureC;
-    const hum = alert.reading.humidityPercent;
-    const min = alert.threshold.minValue;
-    const max = alert.threshold.maxValue;
-
-    if (temp !== null) {
-      return `Temperatur: ${temp}°C liegt außerhalb des Bereichs (${min}°C - ${max}°C)`;
-    } else if (hum !== null) {
-      return `Luftfeuchtigkeit: ${hum}% liegt außerhalb des Bereichs (${min}% - ${max}%)`;
-    }
-    return "Unbekannter Sensorwert";
-  };
+  if (isLoading) return <div className="dashboard-container">Lade Alarme...</div>;
 
   return (
     <div className="dashboard-container">
       <div className="alarms-header-row">
-        <h2 className="page-title">Alarm-Übersicht</h2>
+        <h2 className="page-title" style={{ marginBottom: 0 }}>Alarm-Übersicht</h2>
         {unreadCount > 0 && (
           <button className="mark-read-btn" onClick={markAllAsRead}>
             <FontAwesomeIcon icon={faCheckDouble} /> Alle als gelesen markieren
@@ -145,9 +100,7 @@ const Alarms = () => {
           </div>
           <div className="stat-info">
             <span className="stat-label">Ungelesene Alarme</span>
-            <span className="stat-value">
-              {isLoading ? "..." : unreadCount}
-            </span>
+            <span className="stat-value">{unreadCount}</span>
           </div>
         </div>
 
@@ -156,10 +109,8 @@ const Alarms = () => {
             <FontAwesomeIcon icon={faTemperatureHigh} size="lg" />
           </div>
           <div className="stat-info">
-            <span className="stat-label">Temperatur-Alarme (Gesamt)</span>
-            <span className="stat-value">
-              {isLoading ? "..." : tempAlertsCount}
-            </span>
+            <span className="stat-label">Temperatur-Alarme</span>
+            <span className="stat-value">{tempAlertsCount}</span>
           </div>
         </div>
 
@@ -168,70 +119,50 @@ const Alarms = () => {
             <FontAwesomeIcon icon={faTint} size="lg" />
           </div>
           <div className="stat-info">
-            <span className="stat-label">
-              Luftfeuchtigkeits-Alarme (Gesamt)
-            </span>
-            <span className="stat-value">
-              {isLoading ? "..." : humAlertsCount}
-            </span>
+            <span className="stat-label">Luftfeuchtigkeits-Alarme</span>
+            <span className="stat-value">{humAlertsCount}</span>
           </div>
         </div>
       </div>
 
       <div className="tacho-card alarms-list-card">
-        <h3 className="settings-title">Alle Benachrichtigungen</h3>
-
+        <h3 className="settings-title" style={{ marginBottom: '1.5rem' }}>Alle Benachrichtigungen</h3>
+        
         <div className="alarms-list">
-          {isLoading ? (
-            <div className="empty-state">Lade Alarme aus der Datenbank...</div>
-          ) : alarms.length === 0 ? (
+          {alarms.length === 0 ? (
             <div className="empty-state">Keine Alarme im System vorhanden.</div>
           ) : (
-            alarms.map((alarm) => (
-              <div
-                key={alarm.id}
-                className={`alarm-row ${!alarm.isRead ? "unread-row" : ""}`}
-              >
-                <div
-                  className={`alarm-row-icon ${alarm.reading.temperatureC !== null ? "temperature" : "humidity"}`}
-                >
-                  <FontAwesomeIcon
-                    icon={
-                      alarm.reading.temperatureC !== null
-                        ? faTemperatureHigh
-                        : faTint
-                    }
-                  />
-                </div>
+            alarms.map(alarm => {
+              const isTemp = alarm.threshold?.metricName === 'TemperatureC';
+              const isRead = readIds.has(alarm.id);
 
-                <div className="alarm-row-content">
-                  <div className="alarm-row-message">
-                    {formatAlarmText(alarm)}
+              return (
+                <div key={alarm.id} className={`alarm-row ${!isRead ? 'unread-row' : ''}`}>
+                  
+                  {/* Icon basierend auf Backend-Metrik */}
+                  <div className={`alarm-row-icon ${isTemp ? 'temperature' : 'humidity'}`}>
+                    <FontAwesomeIcon icon={isTemp ? faTemperatureHigh : faTint} />
                   </div>
-                  <div className="alarm-row-time">
-                    {new Date(alarm.triggeredAt).toLocaleDateString("de-DE", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}{" "}
-                    um{" "}
-                    {new Date(alarm.triggeredAt).toLocaleTimeString("de-DE", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    Uhr
-                  </div>
-                </div>
 
-                <button
-                  className="alarm-delete-btn"
-                  onClick={() => removeAlarm(alarm.id)}
-                  title="Alarm löschen"
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-              </div>
-            ))
+                  {/* Textinhalt */}
+                  <div className="alarm-row-content">
+                    <div className="alarm-row-message">{alarm.message}</div>
+                    <div className="alarm-row-time">
+                      {new Date(alarm.triggeredAt).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })} um {new Date(alarm.triggeredAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute:'2-digit' })} Uhr
+                    </div>
+                  </div>
+
+                  {/* Löschen */}
+                  <button 
+                    className="alarm-delete-btn" 
+                    onClick={() => removeAlarm(alarm.id)}
+                    title="Alarm dauerhaft löschen"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </div>
+              );
+            })
           )}
         </div>
       </div>

@@ -19,13 +19,27 @@ interface Threshold {
   maxValue: number;
 }
 
+const defaultTemp: Threshold = {
+  id: "00000000-0000-0000-0000-000000000000",
+  type: 0,
+  metricName: "TemperatureC",
+  minValue: 10,
+  maxValue: 40
+};
+
+const defaultHum: Threshold = {
+  id: "00000000-0000-0000-0000-000000000000",
+  type: 1,
+  metricName: "HumidityPercent",
+  minValue: 20,
+  maxValue: 80
+};
+
 const Settings = () => {
   const { isLoggedIn, logout, token } = useAuth();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-
-  // States für die Werte
-  const [tempThreshold, setTempThreshold] = useState<Threshold | null>(null);
-  const [humThreshold, setHumThreshold] = useState<Threshold | null>(null);
+  const [tempThreshold, setTempThreshold] = useState<Threshold>(defaultTemp);
+  const [humThreshold, setHumThreshold] = useState<Threshold>(defaultHum);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -42,12 +56,9 @@ const Settings = () => {
         });
         if (response.ok) {
           const data: Threshold[] = await response.json();
-          const temp = data.find(
-            (t) => t.metricName === "TemperatureC" || t.type === 0,
-          );
-          const hum = data.find(
-            (t) => t.metricName === "HumidityPercent" || t.type === 1,
-          );
+          
+          const temp = data.find((t) => t.metricName === "TemperatureC" || t.type === 0);
+          const hum = data.find((t) => t.metricName === "HumidityPercent" || t.type === 1);
 
           if (temp) setTempThreshold(temp);
           if (hum) setHumThreshold(hum);
@@ -80,6 +91,12 @@ const Settings = () => {
 
       if (response.ok) {
         setMessage("Erfolgreich gespeichert!");
+        const savedData = await response.json().catch(() => null);
+        if (savedData && savedData.id) {
+          if (updatedThreshold.type === 0) setTempThreshold(savedData);
+          if (updatedThreshold.type === 1) setHumThreshold(savedData);
+        }
+
         setTimeout(() => setMessage(""), 3000);
       } else {
         setError("Fehler beim Speichern im Backend.");
@@ -125,130 +142,108 @@ const Settings = () => {
     );
   }
 
-  return (
+return (
     <div className="dashboard-container">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <h2 className="page-title" style={{ marginBottom: 0 }}>
+      <div className="settings-header">
+        <h2 className="page-title">
           Einstellungen
         </h2>
         <button onClick={logout} className="logout-btn">
           <FontAwesomeIcon icon={faUnlock} /> Logout
         </button>
       </div>
-
-      {isLoading ? (
-        <div className="loading-state">
-          <FontAwesomeIcon icon={faSpinner} spin /> Lade Einstellungen...
-        </div>
-      ) : (
-        <div className="tacho-card settings-card">
-          <h3 className="settings-title">
-            <FontAwesomeIcon
-              icon={faBell}
-              style={{ marginRight: "8px", color: "var(--primary-color)" }}
-            />
-            Zulässiger Normalbereich
-          </h3>
-          <p className="settings-description">
-            Werte außerhalb lösen Alarme aus.
-          </p>
-
-          <div className="thresholds-container">
-            <div className="threshold-group">
-              <label className="threshold-label">Temperatur (°C)</label>
-              <div className="threshold-inputs">
-                <div className="input-wrapper">
-                  <span className="input-prefix">Min</span>
-                  <input
-                    type="number"
-                    value={tempThreshold?.minValue || ""}
-                    onChange={(e) =>
-                      setTempThreshold((prev) =>
-                        prev
-                          ? { ...prev, minValue: Number(e.target.value) }
-                          : null,
-                      )
-                    }
-                    onKeyDown={blockInvalidChars}
-                    onBlur={() => tempThreshold && handleSave(tempThreshold)}
-                    className="threshold-input"
-                  />
-                </div>
-                <div className="input-wrapper">
-                  <span className="input-prefix">Max</span>
-                  <input
-                    type="number"
-                    value={tempThreshold?.maxValue || ""}
-                    onChange={(e) =>
-                      setTempThreshold((prev) =>
-                        prev
-                          ? { ...prev, maxValue: Number(e.target.value) }
-                          : null,
-                      )
-                    }
-                    onKeyDown={blockInvalidChars}
-                    onBlur={() => tempThreshold && handleSave(tempThreshold)}
-                    className="threshold-input"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="threshold-group">
-              <label className="threshold-label">Luftfeuchtigkeit (%)</label>
-              <div className="threshold-inputs">
-                <div className="input-wrapper">
-                  <span className="input-prefix">Min</span>
-                  <input
-                    type="number"
-                    value={humThreshold?.minValue || ""}
-                    onChange={(e) =>
-                      setHumThreshold((prev) =>
-                        prev
-                          ? { ...prev, minValue: Number(e.target.value) }
-                          : null,
-                      )
-                    }
-                    onKeyDown={blockInvalidChars}
-                    onBlur={() => humThreshold && handleSave(humThreshold)}
-                    className="threshold-input"
-                  />
-                </div>
-                <div className="input-wrapper">
-                  <span className="input-prefix">Max</span>
-                  <input
-                    type="number"
-                    value={humThreshold?.maxValue || ""}
-                    onChange={(e) =>
-                      setHumThreshold((prev) =>
-                        prev
-                          ? { ...prev, maxValue: Number(e.target.value) }
-                          : null,
-                      )
-                    }
-                    onKeyDown={blockInvalidChars}
-                    onBlur={() => humThreshold && handleSave(humThreshold)}
-                    className="threshold-input"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {message && <span className="save-message">{message}</span>}
-            {error && <span className="error-message">{error}</span>}
-            {isSaving && (
-              <span className="loading-message">Speichere im Backend...</span>
-            )}
+      <div className="dashboard-content">
+        {isLoading ? (
+          <div className="loading-state">
+            <FontAwesomeIcon icon={faSpinner} spin /> Lade Einstellungen...
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="tacho-card settings-card">
+            <h3 className="settings-title">
+              <FontAwesomeIcon
+                icon={faBell}
+                className="settings-title-icon"
+              />
+              Zulässiger Normalbereich
+            </h3>
+            <p className="settings-description">
+              Werte außerhalb lösen Alarme aus.
+            </p>
+
+            <div className="thresholds-container">
+              <div className="threshold-group">
+                <label className="threshold-label">Temperatur (°C)</label>
+                <div className="threshold-inputs">
+                  <div className="input-wrapper">
+                    <span className="input-prefix">Min</span>
+                    <input
+                      type="number"
+                      value={tempThreshold.minValue}
+                      onChange={(e) =>
+                        setTempThreshold((prev) => ({ ...prev, minValue: Number(e.target.value) }))
+                      }
+                      onKeyDown={blockInvalidChars}
+                      onBlur={() => handleSave(tempThreshold)}
+                      className="threshold-input"
+                    />
+                  </div>
+                  <div className="input-wrapper">
+                    <span className="input-prefix">Max</span>
+                    <input
+                      type="number"
+                      value={tempThreshold.maxValue}
+                      onChange={(e) =>
+                        setTempThreshold((prev) => ({ ...prev, maxValue: Number(e.target.value) }))
+                      }
+                      onKeyDown={blockInvalidChars}
+                      onBlur={() => handleSave(tempThreshold)}
+                      className="threshold-input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="threshold-group">
+                <label className="threshold-label">Luftfeuchtigkeit (%)</label>
+                <div className="threshold-inputs">
+                  <div className="input-wrapper">
+                    <span className="input-prefix">Min</span>
+                    <input
+                      type="number"
+                      value={humThreshold.minValue}
+                      onChange={(e) =>
+                        setHumThreshold((prev) => ({ ...prev, minValue: Number(e.target.value) }))
+                      }
+                      onKeyDown={blockInvalidChars}
+                      onBlur={() => handleSave(humThreshold)}
+                      className="threshold-input"
+                    />
+                  </div>
+                  <div className="input-wrapper">
+                    <span className="input-prefix">Max</span>
+                    <input
+                      type="number"
+                      value={humThreshold.maxValue}
+                      onChange={(e) =>
+                        setHumThreshold((prev) => ({ ...prev, maxValue: Number(e.target.value) }))
+                      }
+                      onKeyDown={blockInvalidChars}
+                      onBlur={() => handleSave(humThreshold)}
+                      className="threshold-input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {message && <span className="save-message">{message}</span>}
+              {error && <span className="error-message">{error}</span>}
+              {isSaving && (
+                <span className="loading-message">Speichere im Backend...</span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

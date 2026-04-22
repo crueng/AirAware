@@ -3,11 +3,12 @@ import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import NotificationBell from '../NotificationBell/NotificationBell';
+import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { isLoggedIn } = useAuth(); 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -19,8 +20,6 @@ const Header = () => {
         </button>
         <h1 className='name'>AirAware</h1>
       </div>
-
-      {/* Navigation und Glocke sind jetzt beide im rechten Container! */}
       <div className="header-right">
         <nav className={`desktop-nav ${isMenuOpen ? 'mobile-open' : ''}`}>
           <ul>
@@ -31,8 +30,7 @@ const Header = () => {
             <li><NavLink to="/settings" onClick={closeMenu}>Einstellungen</NavLink></li>
           </ul>
         </nav>
-        
-        <NotificationBell />
+        {isLoggedIn && <NotificationBell />}
       </div>
     </header> 
   )

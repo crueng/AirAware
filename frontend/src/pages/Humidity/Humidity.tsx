@@ -13,13 +13,15 @@ const Humidity = () => {
     <div className="dashboard-container">
       <h2 className="page-title">Luftfeuchtigkeit</h2>
       
-      <div className="tacho-card">
-        <div className="live-badge">
-          <span className="live-dot"></span>
-          LIVE
-        </div>
+      <div className="dashboard-content">
+        <div className="tacho-card">
+          <div className="live-badge">
+            <span className="live-dot"></span>
+            LIVE
+          </div>
         
-        <HumidityDrop value={humidity} />
+          <HumidityDrop value={humidity} />
+        </div>
       </div>
     </div>
   );
