@@ -87,6 +87,41 @@
   background-color: #fef2f2;
 }
 
+.alert-actions-group {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.alert-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-check-btn {
+  color: #9ca3af;
+}
+
+.action-check-btn:hover {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.action-delete-btn {
+  color: #d1d5db;
+}
+
+.action-delete-btn:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
 .alert-content {
   display: flex;
   flex-direction: column;

@@ -1,38 +1,28 @@
-import { useState, useEffect, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faExclamationTriangle, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Endpoints } from '../../apiConfig'; 
-import './NotificationBell.css'; 
+import { useState, useEffect, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell, faExclamationTriangle, faTimes, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { Endpoints } from "../../apiConfig";
+import { useAuth } from "../../context/AuthContext";
+import "./NotificationBell.css";
 
-interface Alert {
+interface ApiAlert {
   id: string;
   message: string;
   triggeredAt: string;
+  isRead?: boolean;
 }
 
+const getLocalReadIds = (): string[] => JSON.parse(localStorage.getItem('read_alarms') || '[]');
+const getLocalDeletedIds = (): string[] => JSON.parse(localStorage.getItem('deleted_alarms') || '[]');
+
 const NotificationBell = () => {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [alerts, setAlerts] = useState<ApiAlert[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [livePopup, setLivePopup] = useState<Alert | null>(null);
+  const [livePopup, setLivePopup] = useState<ApiAlert | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const lastSeenAlertId = useRef<string | null>(null);
 
-  const [readIds, setReadIds] = useState<Set<string>>(() => {
-    const saved = localStorage.getItem('read_alarms');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
-  });
-
-  const [deletedIds, setDeletedIds] = useState<Set<string>>(() => {
-    const saved = localStorage.getItem('deleted_alarms');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
-  });
-
-  const notifiedIdsRef = useRef<Set<string>>(new Set());
-  
-  const readIdsRef = useRef(readIds);
-  const deletedIdsRef = useRef(deletedIds);
-
-  useEffect(() => { readIdsRef.current = readIds; }, [readIds]);
-  useEffect(() => { deletedIdsRef.current = deletedIds; }, [deletedIds]);
+  const { token, isLoggedIn } = useAuth();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -40,60 +30,97 @@ const NotificationBell = () => {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const fetchAlerts = async () => {
+    if (!token || !isLoggedIn) return;
+
+    try {
+      const response = await fetch(Endpoints.Alerts, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data: ApiAlert[] = await response.json();
+        const readIds = getLocalReadIds();
+        const deletedIds = getLocalDeletedIds();
+
+        const processedData = data
+          .filter(a => !deletedIds.includes(a.id))
+          .map(a => ({
+            ...a,
+            isRead: readIds.includes(a.id)
+          }))
+          .sort((a, b) => new Date(b.triggeredAt).getTime() - new Date(a.triggeredAt).getTime());
+
+        if (processedData.length > 0) {
+          const newest = processedData[0];
+          if (lastSeenAlertId.current !== null && lastSeenAlertId.current !== newest.id && !newest.isRead) {
+            setLivePopup(newest);
+            setTimeout(() => setLivePopup(null), 8000);
+          }
+          lastSeenAlertId.current = newest.id;
+        }
+
+        setAlerts(processedData);
+      }
+    } catch (error) {
+      console.error("Fehler beim Abrufen der Glocken-Alarme:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchAlerts = async () => {
-      try {
-        const response = await fetch(Endpoints.Alerts); 
-        
-        if (response.ok) {
-          const data: Alert[] = await response.json();
-          const activeAlerts = data.filter(alert => !deletedIdsRef.current.has(alert.id));
-          const sortedData = activeAlerts.sort((a, b) => new Date(b.triggeredAt).getTime() - new Date(a.triggeredAt).getTime());
-          setAlerts(sortedData);
-
-          if (sortedData.length > 0) {
-            const newestAlert = sortedData[0];
-            const isUnread = !readIdsRef.current.has(newestAlert.id);
-            const isRecent = (new Date().getTime() - new Date(newestAlert.triggeredAt).getTime()) < 120000; 
-
-            if (isUnread && isRecent && !notifiedIdsRef.current.has(newestAlert.id)) {
-              notifiedIdsRef.current.add(newestAlert.id);
-              setLivePopup(newestAlert);
-              setTimeout(() => setLivePopup(null), 6000);
-            }
-          }
-        }
-       } catch (error) {
-        console.error("Fehler beim Laden der Alarme:", error);
-      }
+    fetchAlerts();
+    const interval = setInterval(fetchAlerts, 15000);
+    const handleSync = () => {
+      const readIds = getLocalReadIds();
+      const deletedIds = getLocalDeletedIds();
+      
+      setAlerts(prevAlerts => prevAlerts
+        .filter(a => !deletedIds.includes(a.id))
+        .map(a => ({
+          ...a,
+          isRead: readIds.includes(a.id)
+        }))
+      );
     };
+    
+    window.addEventListener('sync_alarms', handleSync);
 
-    fetchAlerts(); 
-    const interval = setInterval(fetchAlerts, 10000); 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('sync_alarms', handleSync);
+    };
+  }, [token, isLoggedIn]);
 
   const markAsRead = (id: string) => {
-    const newReadIds = new Set(readIds);
-    newReadIds.add(id);
-    setReadIds(newReadIds);
-    localStorage.setItem('read_alarms', JSON.stringify(Array.from(newReadIds)));
+    const readIds = getLocalReadIds();
+    if (!readIds.includes(id)) {
+      readIds.push(id);
+      localStorage.setItem('read_alarms', JSON.stringify(readIds));
+    }
+    setAlerts((prev) => prev.map(a => a.id === id ? { ...a, isRead: true } : a));
+    window.dispatchEvent(new Event('sync_alarms')); // Hauptseite informieren
   };
 
   const removeAlert = (id: string) => {
-    const newDeletedIds = new Set(deletedIds);
-    newDeletedIds.add(id);
-    setDeletedIds(newDeletedIds);
-    localStorage.setItem('deleted_alarms', JSON.stringify(Array.from(newDeletedIds)));
-    
-    setAlerts(prev => prev.filter(a => a.id !== id));
+    const deletedIds = getLocalDeletedIds();
+    if (!deletedIds.includes(id)) {
+      deletedIds.push(id);
+      localStorage.setItem('deleted_alarms', JSON.stringify(deletedIds));
+    }
+    setAlerts((prev) => prev.filter(a => a.id !== id));
+    window.dispatchEvent(new Event('sync_alarms')); // Hauptseite informieren
   };
 
-  const unreadCount = alerts.filter(a => !readIds.has(a.id)).length;
+  const unreadCount = alerts.filter((a) => !a.isRead).length;
+
+  if (!isLoggedIn) return null;
 
   return (
     <>
@@ -101,17 +128,9 @@ const NotificationBell = () => {
         <div className="alarm-popup" onClick={() => { markAsRead(livePopup.id); setLivePopup(null); setIsOpen(true); }}>
           <div className="popup-header-row">
             <div className="popup-title">
-              <FontAwesomeIcon icon={faExclamationTriangle} />
-              Neuer Sensor-Alarm!
+              <FontAwesomeIcon icon={faExclamationTriangle} /> Neuer Sensor-Alarm!
             </div>
-            <button 
-              className="popup-close-btn" 
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                setLivePopup(null); 
-                markAsRead(livePopup.id); 
-              }}
-            >
+            <button className="popup-close-btn" onClick={(e) => { e.stopPropagation(); setLivePopup(null); }}>
               <FontAwesomeIcon icon={faTimes} />
             </button>
           </div>
@@ -123,7 +142,9 @@ const NotificationBell = () => {
         <button className="bell-button" onClick={() => setIsOpen(!isOpen)}>
           <FontAwesomeIcon icon={faBell} />
           {unreadCount > 0 && (
-            <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            <span className="notification-badge">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
           )}
         </button>
 
@@ -135,40 +156,30 @@ const NotificationBell = () => {
 
             <div className="alert-list">
               {alerts.length === 0 ? (
-                <div style={{ padding: '1rem', textAlign: 'center', color: '#6b7280', fontSize: '0.9rem' }}>
-                  Keine Alarme vorhanden.
-                </div>
+                <div className="empty-state-text">Keine Alarme vorhanden.</div>
               ) : (
-                alerts.slice(0, 5).map(alert => {
-                  const isRead = readIds.has(alert.id);
-                  return (
-                    <div
-                      key={alert.id}
-                      className={`alert-item ${!isRead ? 'unread' : ''}`}
-                      onClick={() => markAsRead(alert.id)}
-                    >
-                      <div className="alert-content">
-                        <div className="alert-time">
-                          {new Date(alert.triggeredAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute:'2-digit' })} Uhr
-                        </div>
-                        <div className="alert-message">
-                          {alert.message}
-                        </div>
+                alerts.slice(0, 5).map((alert) => (
+                  <div key={alert.id} className={`alert-item ${!alert.isRead ? "unread" : ""}`}>
+                    <div className="alert-content" onClick={() => markAsRead(alert.id)}>
+                      <div className="alert-time">
+                        {new Date(alert.triggeredAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr
                       </div>
-                      
-                      <button 
-                        className="alert-close-btn" 
-                        title="Alarm entfernen"
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          removeAlert(alert.id); 
-                        }}
-                      >
+                      <div className="alert-message">{alert.message}</div>
+                    </div>
+                    
+                    <div className="alert-actions-group">
+                      {!alert.isRead && (
+                        <button className="alert-action-btn action-check-btn" onClick={(e) => { e.stopPropagation(); markAsRead(alert.id); }} title="Als gelesen markieren">
+                          <FontAwesomeIcon icon={faCheck} />
+                        </button>
+                      )}
+                      <button className="alert-action-btn action-delete-btn" onClick={(e) => { e.stopPropagation(); removeAlert(alert.id); }} title="Alarm löschen">
                         <FontAwesomeIcon icon={faTimes} />
                       </button>
                     </div>
-                  );
-                })
+
+                  </div>
+                ))
               )}
             </div>
 
