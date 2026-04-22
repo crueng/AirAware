@@ -23,6 +23,19 @@
   gap: 2rem; 
 }
 
+.header-logo-link {
+  text-decoration: none; 
+  color: inherit;        
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.header-logo-link:hover {
+  opacity: 0.8; 
+}
+
 .desktop-nav ul {
   display: flex;
   list-style: none; 

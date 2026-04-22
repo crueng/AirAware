@@ -5,5 +5,6 @@ export const Endpoints = {
   Thresholds: `${BASE_URL}/SensorData/thresholds`,
   Alerts: `${BASE_URL}/SensorData/alerts`,
   Login: `${BASE_URL}/Auth/login`,
+  History: `${BASE_URL}/SensorData/history`,
+  ReportCsv: `${BASE_URL}/SensorData/report/csv`,
 };
-
