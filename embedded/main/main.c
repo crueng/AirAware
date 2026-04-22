@@ -45,9 +45,6 @@ void app_main(void)
 		ret = nvs_flash_init();
 	}
 	ESP_ERROR_CHECK(ret);
-	wifiInitSoftAp();
-
-	ESP_LOGI("", "Wifi Initialized");
 
 	gpio_config_t io = {
 		.mode = GPIO_MODE_INPUT,
@@ -75,6 +72,29 @@ void app_main(void)
 	int raw_value = 0;
 	float temp_c = 0;
 	float humidity = 0;
+
+	// NVS initialisieren
+	ret = nvs_flash_init();
+	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+		ESP_ERROR_CHECK(nvs_flash_erase());
+		ret = nvs_flash_init();
+	}
+	ESP_ERROR_CHECK(ret);
+
+	wifi_init_softap();
+
+	// Zuerst gespeicherte Credentials versuchen
+	if (try_saved_credentials()) {
+		ESP_LOGI("AP", "Automatisch verbunden. AP läuft weiterhin für Rekonfiguration.");
+	} else {
+		ESP_LOGI("AP", "Keine gültigen Credentials. Warte auf Web-Eingabe...");
+	}
+
+	start_webserver();
+	ESP_LOGI("AP", "Webserver gestartet auf http://192.168.4.1");
+
+	return;
+
 	while (true) {
 
 		adc_oneshot_read(adc_handle, ADC_CHANNEL_2, &raw_value);
