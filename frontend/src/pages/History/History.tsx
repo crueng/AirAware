@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import CustomDropdown from '../../components/CustomDropdown/CustomDropdown';
 import { Endpoints } from '../../apiConfig';
 import '../Pages.css';
 import './History.css';
@@ -32,10 +33,6 @@ export default function History() {
   const [viewMode, setViewMode] = useState<string>('combined');
   const [dataCount, setDataCount] = useState<number>(window.innerWidth <= 480 ? 50 : 100);
   const [loading, setLoading] = useState(true);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const timeDropdownRef = useRef<HTMLDivElement>(null); 
   const [dateRange, setDateRange] = useState<{from: string, to: string} | null>(null);
 
   useEffect(() => {
@@ -75,19 +72,6 @@ export default function History() {
     fetchHistory();
   }, [dataCount]); 
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-      if (timeDropdownRef.current && !timeDropdownRef.current.contains(event.target as Node)) {
-        setIsTimeDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleDownloadCsv = () => {
     if (dateRange) {
       window.open(`${Endpoints.ReportCsv}?from=${dateRange.from}&to=${dateRange.to}`, '_blank');
@@ -96,74 +80,22 @@ export default function History() {
     }
   };
 
-  const selectedLabel = VIEW_OPTIONS.find(opt => opt.id === viewMode)?.label;
-  const selectedTimeLabel = TIME_OPTIONS.find(opt => opt.id === dataCount)?.label; // NEU
-
   return (
     <div className="dashboard-container">
       <div className="history-header-row">
         <h2 className="page-title">Historischer Verlauf</h2>
         
-        <div className="history-controls">
-          <div className="custom-dropdown" ref={dropdownRef}>
-            <button 
-              className={`dropdown-trigger ${isDropdownOpen ? 'active' : ''}`}
-              onClick={() => {
-                setIsDropdownOpen(!isDropdownOpen);
-                setIsTimeDropdownOpen(false);
-              }}
-            >
-              <span>{selectedLabel}</span>
-              <FontAwesomeIcon icon={faChevronDown} className={`arrow-icon ${isDropdownOpen ? 'rotated' : ''}`} />
-            </button>
-
-            {isDropdownOpen && (
-              <div className="dropdown-menu">
-                {VIEW_OPTIONS.map((option) => (
-                  <div 
-                    key={option.id} 
-                    className={`dropdown-item ${viewMode === option.id ? 'selected' : ''}`}
-                    onClick={() => {
-                      setViewMode(option.id);
-                      setIsDropdownOpen(false);
-                    }}
-                  >
-                    {option.label}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="custom-dropdown" ref={timeDropdownRef}>
-            <button 
-              className={`dropdown-trigger ${isTimeDropdownOpen ? 'active' : ''}`}
-              onClick={() => {
-                setIsTimeDropdownOpen(!isTimeDropdownOpen);
-                setIsDropdownOpen(false); 
-              }}
-            >
-              <span>{selectedTimeLabel}</span>
-              <FontAwesomeIcon icon={faChevronDown} className={`arrow-icon ${isTimeDropdownOpen ? 'rotated' : ''}`} />
-            </button>
-
-            {isTimeDropdownOpen && (
-              <div className="dropdown-menu">
-                {TIME_OPTIONS.map((option) => (
-                  <div 
-                    key={option.id} 
-                    className={`dropdown-item ${dataCount === option.id ? 'selected' : ''}`}
-                    onClick={() => {
-                      setDataCount(option.id);
-                      setIsTimeDropdownOpen(false);
-                    }}
-                  >
-                    {option.label}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <div className="history-controls">  
+          <CustomDropdown 
+            options={VIEW_OPTIONS}
+            value={viewMode}
+            onChange={(val) => setViewMode(val as string)}
+          />
+          <CustomDropdown 
+            options={TIME_OPTIONS}
+            value={dataCount}
+            onChange={(val) => setDataCount(Number(val))}
+          />
 
           <button className="csv-download-btn" onClick={handleDownloadCsv}>
             <FontAwesomeIcon icon={faDownload} /> CSV Export
