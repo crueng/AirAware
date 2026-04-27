@@ -5,9 +5,14 @@ import {
   faUnlock,
   faBell,
   faSpinner,
+  faClock 
 } from "@fortawesome/free-solid-svg-icons";
 import LoginPopup from "../../components/LoginPopup/Login";
+import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
+import RegisterUser from "../../components/RegisterUser/RegisterUser"; 
+import CustomButton from "../../components/CustomButton/CustomButton";
 import { useAuth } from "../../context/AuthContext";
+import { useSensorData } from "../../context/SensorContext"; 
 import { Endpoints } from "../../apiConfig";
 import "./Settings.css";
 
@@ -35,12 +40,19 @@ const defaultHum: Threshold = {
   maxValue: 80
 };
 
+const INTERVAL_OPTIONS = [
+  { value: 5000, label: "5 Sekunden" },
+  { value: 10000, label: "10 Sekunden" },
+  { value: 30000, label: "30 Sekunden" },
+  { value: 60000, label: "1 Minute" },
+];
+
 const Settings = () => {
   const { isLoggedIn, logout, token } = useAuth();
+  const { refreshInterval, setRefreshInterval } = useSensorData(); 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [tempThreshold, setTempThreshold] = useState<Threshold>(defaultTemp);
   const [humThreshold, setHumThreshold] = useState<Threshold>(defaultHum);
-
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -125,12 +137,9 @@ const Settings = () => {
                 Bitte melde dich an, um Schwellenwerte zu ändern.
               </p>
             </div>
-            <button
-              className="save-button locked-btn"
-              onClick={() => setShowLoginPopup(true)}
-            >
+            <CustomButton onClick={() => setShowLoginPopup(true)}>
               Jetzt anmelden
-            </button>
+            </CustomButton>
           </div>
         ) : (
           <LoginPopup
@@ -142,28 +151,49 @@ const Settings = () => {
     );
   }
 
-return (
+  return (
     <div className="dashboard-container">
       <div className="settings-header">
-        <h2 className="page-title">
-          Einstellungen
-        </h2>
+        <h2 className="page-title">Einstellungen</h2>
         <button onClick={logout} className="logout-btn">
           <FontAwesomeIcon icon={faUnlock} /> Logout
         </button>
       </div>
+      
       <div className="dashboard-content">
         {isLoading ? (
           <div className="loading-state">
             <FontAwesomeIcon icon={faSpinner} spin /> Lade Einstellungen...
           </div>
         ) : (
-          <div className="tacho-card settings-card">
+          <div className="tacho-card settings-card" style={{ width: '100%' }}>
+            
             <h3 className="settings-title">
-              <FontAwesomeIcon
-                icon={faBell}
-                className="settings-title-icon"
-              />
+              <FontAwesomeIcon icon={faClock} className="settings-title-icon" />
+              System & App
+            </h3>
+            
+            <div className="settings-list">
+              <div className="settings-list-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+                <div className="settings-row-info">
+                  <h4>Daten-Aktualisierung</h4>
+                  <p>Wie oft sollen neue Werte vom Sensor geladen werden?</p>
+                </div>
+                
+                <div className="settings-row-control">
+                  <CustomDropdown 
+                    options={INTERVAL_OPTIONS.map(opt => ({ id: opt.value, label: opt.label }))}
+                    value={refreshInterval}
+                    onChange={(newVal) => setRefreshInterval(Number(newVal))}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr style={{ border: 'none', borderTop: '1px solid var(--navy-100)', margin: '2rem 0', width: '100%' }} />
+
+            <h3 className="settings-title">
+              <FontAwesomeIcon icon={faBell} className="settings-title-icon" />
               Zulässiger Normalbereich
             </h3>
             <p className="settings-description">
@@ -179,9 +209,7 @@ return (
                     <input
                       type="number"
                       value={tempThreshold.minValue}
-                      onChange={(e) =>
-                        setTempThreshold((prev) => ({ ...prev, minValue: Number(e.target.value) }))
-                      }
+                      onChange={(e) => setTempThreshold((prev) => ({ ...prev, minValue: Number(e.target.value) }))}
                       onKeyDown={blockInvalidChars}
                       onBlur={() => handleSave(tempThreshold)}
                       className="threshold-input"
@@ -192,9 +220,7 @@ return (
                     <input
                       type="number"
                       value={tempThreshold.maxValue}
-                      onChange={(e) =>
-                        setTempThreshold((prev) => ({ ...prev, maxValue: Number(e.target.value) }))
-                      }
+                      onChange={(e) => setTempThreshold((prev) => ({ ...prev, maxValue: Number(e.target.value) }))}
                       onKeyDown={blockInvalidChars}
                       onBlur={() => handleSave(tempThreshold)}
                       className="threshold-input"
@@ -211,9 +237,7 @@ return (
                     <input
                       type="number"
                       value={humThreshold.minValue}
-                      onChange={(e) =>
-                        setHumThreshold((prev) => ({ ...prev, minValue: Number(e.target.value) }))
-                      }
+                      onChange={(e) => setHumThreshold((prev) => ({ ...prev, minValue: Number(e.target.value) }))}
                       onKeyDown={blockInvalidChars}
                       onBlur={() => handleSave(humThreshold)}
                       className="threshold-input"
@@ -224,9 +248,7 @@ return (
                     <input
                       type="number"
                       value={humThreshold.maxValue}
-                      onChange={(e) =>
-                        setHumThreshold((prev) => ({ ...prev, maxValue: Number(e.target.value) }))
-                      }
+                      onChange={(e) => setHumThreshold((prev) => ({ ...prev, maxValue: Number(e.target.value) }))}
                       onKeyDown={blockInvalidChars}
                       onBlur={() => handleSave(humThreshold)}
                       className="threshold-input"
@@ -237,10 +259,13 @@ return (
 
               {message && <span className="save-message">{message}</span>}
               {error && <span className="error-message">{error}</span>}
-              {isSaving && (
-                <span className="loading-message">Speichere im Backend...</span>
-              )}
+              {isSaving && <span className="loading-message">Speichere im Backend...</span>}
             </div>
+
+            <hr style={{ border: 'none', borderTop: '1px solid var(--navy-100)', margin: '2.5rem 0 2rem 0', width: '100%' }} />
+
+            <RegisterUser />
+
           </div>
         )}
       </div>

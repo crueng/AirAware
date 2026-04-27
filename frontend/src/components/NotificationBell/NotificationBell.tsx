@@ -105,7 +105,7 @@ const NotificationBell = () => {
       localStorage.setItem('read_alarms', JSON.stringify(readIds));
     }
     setAlerts((prev) => prev.map(a => a.id === id ? { ...a, isRead: true } : a));
-    window.dispatchEvent(new Event('sync_alarms')); // Hauptseite informieren
+    window.dispatchEvent(new Event('sync_alarms'));
   };
 
   const removeAlert = (id: string) => {
@@ -115,7 +115,7 @@ const NotificationBell = () => {
       localStorage.setItem('deleted_alarms', JSON.stringify(deletedIds));
     }
     setAlerts((prev) => prev.filter(a => a.id !== id));
-    window.dispatchEvent(new Event('sync_alarms')); // Hauptseite informieren
+    window.dispatchEvent(new Event('sync_alarms'));
   };
 
   const unreadCount = alerts.filter((a) => !a.isRead).length;
