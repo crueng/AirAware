@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLock,
-  faUnlock,
-  faBell,
-  faSpinner,
-  faClock 
-} from "@fortawesome/free-solid-svg-icons";
+import { faLock, faUnlock, faBell, faSpinner, faClock } from "@fortawesome/free-solid-svg-icons";
 import LoginPopup from "../../components/LoginPopup/Login";
 import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 import RegisterUser from "../../components/RegisterUser/RegisterUser"; 
+import DeleteUser from "../../components/DeleteUser/DeleteUser"; 
 import CustomButton from "../../components/CustomButton/CustomButton";
+import Toast from "../../components/Toast/Toast";
 import { useAuth } from "../../context/AuthContext";
 import { useSensorData } from "../../context/SensorContext"; 
 import { Endpoints } from "../../apiConfig";
@@ -49,14 +45,13 @@ const INTERVAL_OPTIONS = [
 
 const Settings = () => {
   const { isLoggedIn, logout, token } = useAuth();
-  const { refreshInterval, setRefreshInterval } = useSensorData(); 
+  const { refreshInterval, setRefreshInterval, tempUnit, setTempUnit } = useSensorData();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [tempThreshold, setTempThreshold] = useState<Threshold>(defaultTemp);
   const [humThreshold, setHumThreshold] = useState<Threshold>(defaultHum);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [toast, setToast] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
 
   useEffect(() => {
     const fetchThresholds = async () => {
@@ -68,7 +63,6 @@ const Settings = () => {
         });
         if (response.ok) {
           const data: Threshold[] = await response.json();
-          
           const temp = data.find((t) => t.metricName === "TemperatureC" || t.type === 0);
           const hum = data.find((t) => t.metricName === "HumidityPercent" || t.type === 1);
 
@@ -81,15 +75,19 @@ const Settings = () => {
         setIsLoading(false);
       }
     };
-
     fetchThresholds();
   }, [isLoggedIn, token]);
+
+const handleToggleUnit = () => {
+  const newUnit = tempUnit === 'C' ? 'F' : 'C';
+  setTempUnit(newUnit);
+  setToast({ msg: `Einheit auf °${newUnit} geändert!`, type: 'success' });
+};
 
   const handleSave = async (updatedThreshold: Threshold) => {
     if (!token) return;
     setIsSaving(true);
-    setMessage("");
-    setError("");
+    setToast(null);
 
     try {
       const response = await fetch(Endpoints.Thresholds, {
@@ -102,19 +100,17 @@ const Settings = () => {
       });
 
       if (response.ok) {
-        setMessage("Erfolgreich gespeichert!");
+        setToast({ msg: "Schwellenwerte erfolgreich gespeichert!", type: 'success' });
         const savedData = await response.json().catch(() => null);
         if (savedData && savedData.id) {
           if (updatedThreshold.type === 0) setTempThreshold(savedData);
           if (updatedThreshold.type === 1) setHumThreshold(savedData);
         }
-
-        setTimeout(() => setMessage(""), 3000);
       } else {
-        setError("Fehler beim Speichern im Backend.");
+        setToast({ msg: "Fehler beim Speichern im Backend.", type: 'error' });
       }
     } catch (err) {
-      setError("Netzwerkfehler beim Speichern.");
+      setToast({ msg: "Netzwerkfehler beim Speichern.", type: 'error' });
     } finally {
       setIsSaving(false);
     }
@@ -133,19 +129,14 @@ const Settings = () => {
             <FontAwesomeIcon icon={faLock} size="2x" className="locked-icon" />
             <div className="locked-text-wrapper">
               <h3 className="locked-title">Einstellungen gesperrt</h3>
-              <p className="locked-description">
-                Bitte melde dich an, um Schwellenwerte zu ändern.
-              </p>
+              <p className="locked-description">Bitte melde dich an, um Anpassungen zu machen.</p>
             </div>
             <CustomButton onClick={() => setShowLoginPopup(true)}>
               Jetzt anmelden
             </CustomButton>
           </div>
         ) : (
-          <LoginPopup
-            onClose={() => setShowLoginPopup(false)}
-            onSuccess={() => setShowLoginPopup(false)}
-          />
+          <LoginPopup onClose={() => setShowLoginPopup(false)} onSuccess={() => setShowLoginPopup(false)} />
         )}
       </div>
     );
@@ -153,6 +144,8 @@ const Settings = () => {
 
   return (
     <div className="dashboard-container">
+      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+
       <div className="settings-header">
         <h2 className="page-title">Einstellungen</h2>
         <button onClick={logout} className="logout-btn">
@@ -174,7 +167,7 @@ const Settings = () => {
             </h3>
             
             <div className="settings-list">
-              <div className="settings-list-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+              <div className="settings-list-row"> 
                 <div className="settings-row-info">
                   <h4>Daten-Aktualisierung</h4>
                   <p>Wie oft sollen neue Werte vom Sensor geladen werden?</p>
@@ -186,6 +179,21 @@ const Settings = () => {
                     value={refreshInterval}
                     onChange={(newVal) => setRefreshInterval(Number(newVal))}
                   />
+                </div>
+              </div>
+
+              <div className="settings-list-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+                <div className="settings-row-info">
+                  <h4>Temperatureinheit</h4>
+                  <p>Wähle zwischen Celsius (°C) und Fahrenheit (°F)</p>
+                </div>
+                
+                <div className="settings-row-control">
+                  <div className={`toggle ${tempUnit === 'F' ? 'active' : ''}`} onClick={handleToggleUnit}>
+                    <div className="toggle-knob">
+                      {tempUnit === 'F' ? '°F' : '°C'}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -257,15 +265,14 @@ const Settings = () => {
                 </div>
               </div>
 
-              {message && <span className="save-message">{message}</span>}
-              {error && <span className="error-message">{error}</span>}
               {isSaving && <span className="loading-message">Speichere im Backend...</span>}
             </div>
 
             <hr style={{ border: 'none', borderTop: '1px solid var(--navy-100)', margin: '2.5rem 0 2rem 0', width: '100%' }} />
-
             <RegisterUser />
 
+            <hr style={{ border: 'none', borderTop: '1px solid var(--navy-100)', margin: '2.5rem 0 2rem 0', width: '100%' }} />
+            <DeleteUser />
           </div>
         )}
       </div>

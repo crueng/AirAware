@@ -7,12 +7,17 @@ interface ApiSensorData {
   humidityPercent: number | null;
 }
 
+type TempUnit = 'C' | 'F';
+
 interface SensorContextType {
   temp: number;
   humidity: number;
   loading: boolean;
   refreshInterval: number;
   setRefreshInterval: (interval: number) => void;
+  tempUnit: TempUnit;
+  setTempUnit: (unit: TempUnit) => void;
+  convertTemp: (celsius: number) => number;
 }
 
 const SensorContext = createContext<SensorContextType | undefined>(undefined);
@@ -27,6 +32,20 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
     return savedInterval ? Number(savedInterval) : 5000;
   });
 
+  const [tempUnit, setTempUnitState] = useState<TempUnit>(() => {
+    return (localStorage.getItem('temp_unit') as TempUnit) || 'C';
+  });
+
+  const setTempUnit = (unit: TempUnit) => {
+    setTempUnitState(unit);
+    localStorage.setItem('temp_unit', unit);
+  };
+
+  const convertTemp = (celsius: number): number => {
+    if (tempUnit === 'C') return celsius;
+    return parseFloat(((celsius * 9) / 5 + 32).toFixed(1));
+  };
+
   useEffect(() => {
     localStorage.setItem('app_refresh_interval', refreshInterval.toString());
   }, [refreshInterval]);
@@ -35,9 +54,9 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
     const abortController = new AbortController(); 
 
     const fetchLatestData = async () => {
-        console.log(`⏱️ Fetche neue Daten... (Aktuelles Intervall: ${refreshInterval} ms)`);
+      console.log(`⏱️ Fetche neue Daten... (Aktuelles Intervall: ${refreshInterval} ms)`);
       
-    try {
+      try {
         const response = await fetch(Endpoints.LatestSensorData, {
           signal: abortController.signal
         });
@@ -78,7 +97,16 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
   }, [refreshInterval]); 
 
   return (
-    <SensorContext.Provider value={{ temp, humidity, loading, refreshInterval, setRefreshInterval }}>
+    <SensorContext.Provider value={{ 
+      temp, 
+      humidity, 
+      loading, 
+      refreshInterval, 
+      setRefreshInterval,
+      tempUnit,
+      setTempUnit,
+      convertTemp
+    }}>
       {children}
     </SensorContext.Provider>
   );

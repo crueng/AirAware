@@ -54,6 +54,13 @@
   margin-bottom: 1.5rem;
 }
 
+.popup-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem; 
+  width: 100%;     
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -77,22 +84,26 @@
   box-shadow: 0 0 0 3px rgba(238, 108, 77, 0.15); 
 }
 
-.popup-actions {
+.popup-actions button, 
+.popup-actions .custom-btn,
+.popup-actions .cancel-button {
+  flex: 1;            
+  padding: 0.8rem;   
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap; 
 }
 
 .custom-btn.cancel-button {
   background-color: transparent;
   border: 1px solid var(--navy-100);
-  color: #4B5563;
-  flex: 1; 
+  color: var(--gray-600);
 }
 
 .custom-btn.cancel-button:hover:not(:disabled) {
-  background-color: #e7e7ec;
-  color: #4B5563; 
+  background-color: #f3f4f6;
+  color: #111827;
   border: 1px solid var(--navy-100);
 }
 

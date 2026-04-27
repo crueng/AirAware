@@ -1,10 +1,15 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext} from "react";
 import type { ReactNode } from "react";
 import { Endpoints } from "../apiConfig";
+
+interface User {
+  username: string;
+}
 
 interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
+  user: User | null; 
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
@@ -15,6 +20,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("jwt_token"),
   );
+  
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem("username");
+    return savedUser ? { username: savedUser } : null;
+  });
+
   const isLoggedIn = !!token;
 
   const login = async (username: string, password: string) => {
@@ -32,7 +43,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (receivedToken) {
           setToken(receivedToken);
+          setUser({ username });
+          
           localStorage.setItem("jwt_token", receivedToken);
+          localStorage.setItem("username", username); 
           return true;
         }
       }
@@ -45,11 +59,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setToken(null);
+    setUser(null); 
     localStorage.removeItem("jwt_token");
+    localStorage.removeItem("username");
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, token, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, token, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

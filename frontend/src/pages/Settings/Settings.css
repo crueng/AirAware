@@ -56,6 +56,42 @@
   min-width: 220px;
 }
 
+.toggle {
+  width: 74px;
+  height: 38px;
+  background-color: var(--navy-100);
+  border-radius: 20px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s ease;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.toggle.active {
+  background-color: var(--primary-color);
+}
+
+.toggle-knob {
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s;
+}
+
+.toggle.active .toggle-knob {
+  transform: translateX(36px);
+  color: var(--primary-color);
+}
+
 .settings-title-icon {
   margin-right: 8px;
   color: var(--primary-color);
@@ -182,24 +218,6 @@
   flex-wrap: wrap;
 }
 
-.save-message {
-  color: var(--success-color);
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  animation: fadeSlideIn 0.3s ease-out forwards;
-}
-
-.error-message {
-  color: #ef4444; 
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  animation: fadeSlideIn 0.3s ease-out forwards;
-}
-
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -207,21 +225,27 @@
 
 .locked-container {
   background-color: white;
-  border-radius: 12px;
-  padding: 2rem 3rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-radius: 20px; 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem; 
   display: flex;
   align-items: center;
   gap: 2rem;
-  border: 1px solid #F3F4F6;
+  border: 1px solid rgba(0, 0, 0, 0.03); 
   max-width: 600px;
+  width: 100%;
+  margin: 1rem auto; /
 }
 
 .locked-icon {
   color: #9CA3AF;
-  background-color: #F3F4F6;
-  padding: 1.5rem;
-  border-radius: 50%;
+  background-color: #F9FAFB;
+  padding: 1.2rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .locked-text-wrapper {
@@ -230,21 +254,17 @@
 
 .locked-title {
   color: var(--navy-900);
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
-  font-weight: 600;
+  margin: 0 0 0.4rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .locked-description {
   color: #6B7280;
   margin: 0;
   font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-.locked-btn {
-  padding: 0.8rem 2rem;
-  white-space: nowrap;
+  line-height: 1.6;
 }
 
 .logout-btn {
@@ -277,8 +297,12 @@
   .locked-container {
     flex-direction: column;
     text-align: center;
-    padding: 2rem;
+    padding: 2rem 1.5rem;
     gap: 1.5rem;
+  }
+  
+  .locked-icon {
+    margin: 0 auto;
   }
 }
 
