@@ -1,0 +1,23 @@
+.register-form {
+  width: 100%;
+  max-width: 400px;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background-color: var(--gray-100);
+  border: 1px solid var(--navy-100);
+  border-radius: 8px;
+  color: var(--navy-900);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.custom-input:focus {
+  border-color: var(--primary-color);
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(238, 108, 77, 0.1);
+}

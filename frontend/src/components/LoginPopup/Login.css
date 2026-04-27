@@ -83,56 +83,17 @@
   margin-top: 1rem;
 }
 
-.cancel-button {
+.custom-btn.cancel-button {
   background-color: transparent;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--navy-100);
   color: #4B5563;
-  padding: 0.8rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  flex: 1;
-  transition: background-color 0.2s;
+  flex: 1; 
 }
 
-.cancel-button:hover:not(:disabled) {
+.custom-btn.cancel-button:hover:not(:disabled) {
   background-color: #e7e7ec;
-  box-shadow: 0 4px 12px rgba(134, 134, 134, 0.2);
-}
-
-.cancel-button:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.cancel-button:disabled {
-  background-color: #9CA3AF;
-  cursor: not-allowed;
-}
-
-.save-button {
-  background-color: transparent;
-  border: 1px solid #D1D5DB;
-  color: #4B5563;
-  padding: 0.8rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  flex: 1;
-  transition: background-color 0.2s;
-}
-
-.save-button:hover:not(:disabled) {
-  background-color: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(238, 108, 77, 0.2);
-}
-
-.save-button:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.save-button:disabled {
-  background-color: #9CA3AF;
-  cursor: not-allowed;
+  color: #4B5563; 
+  border: 1px solid var(--navy-100);
 }
 
 .popup-submit-btn {

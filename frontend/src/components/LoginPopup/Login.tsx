@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import './Login.css';
 import { useAuth } from '../../context/AuthContext';
+import CustomButton from '../CustomButton/CustomButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
 
 interface LoginPopupProps {
   onClose: () => void;
@@ -57,12 +62,20 @@ const LoginPopup = ({ onClose, onSuccess }: LoginPopupProps) => {
             className="pin-input"
           />
           <div className="popup-actions">
-            <button type="button" className="cancel-button" onClick={onClose}>
+            <CustomButton 
+              type="button" 
+              className="cancel-button" 
+              onClick={onClose}
+            >
               Abbrechen
-            </button>
-            <button type="submit" disabled={isLoading} className="save-button popup-submit-btn">
-              {isLoading ? "Lädt..." : "Einloggen"}
-           </button>
+            </CustomButton>
+
+            <CustomButton 
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Benutzer anlegen"}
+            </CustomButton>
           </div>
         </form>
 

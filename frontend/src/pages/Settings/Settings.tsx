@@ -9,6 +9,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import LoginPopup from "../../components/LoginPopup/Login";
 import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
+import RegisterUser from "../../components/RegisterUser/RegisterUser"; 
+import CustomButton from "../../components/CustomButton/CustomButton";
 import { useAuth } from "../../context/AuthContext";
 import { useSensorData } from "../../context/SensorContext"; 
 import { Endpoints } from "../../apiConfig";
@@ -135,12 +137,9 @@ const Settings = () => {
                 Bitte melde dich an, um Schwellenwerte zu ändern.
               </p>
             </div>
-            <button
-              className="save-button locked-btn"
-              onClick={() => setShowLoginPopup(true)}
-            >
+            <CustomButton onClick={() => setShowLoginPopup(true)}>
               Jetzt anmelden
-            </button>
+            </CustomButton>
           </div>
         ) : (
           <LoginPopup
@@ -175,7 +174,7 @@ const Settings = () => {
             </h3>
             
             <div className="settings-list">
-              <div className="settings-list-row">
+              <div className="settings-list-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
                 <div className="settings-row-info">
                   <h4>Daten-Aktualisierung</h4>
                   <p>Wie oft sollen neue Werte vom Sensor geladen werden?</p>
@@ -262,6 +261,10 @@ const Settings = () => {
               {error && <span className="error-message">{error}</span>}
               {isSaving && <span className="loading-message">Speichere im Backend...</span>}
             </div>
+
+            <hr style={{ border: 'none', borderTop: '1px solid var(--navy-100)', margin: '2.5rem 0 2rem 0', width: '100%' }} />
+
+            <RegisterUser />
 
           </div>
         )}

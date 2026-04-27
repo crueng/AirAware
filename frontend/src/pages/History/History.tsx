@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import CustomDropdown from '../../components/CustomDropdown/CustomDropdown';
 import { Endpoints } from '../../apiConfig';
+import CustomButton from '../../components/CustomButton/CustomButton';
 import '../Pages.css';
 import './History.css';
 
@@ -97,9 +98,9 @@ export default function History() {
             onChange={(val) => setDataCount(Number(val))}
           />
 
-          <button className="csv-download-btn" onClick={handleDownloadCsv}>
+          <CustomButton onClick={handleDownloadCsv}>
             <FontAwesomeIcon icon={faDownload} /> CSV Export
-          </button>
+          </CustomButton>
         </div>
       </div>
 
