@@ -20,19 +20,29 @@ const VIEW_OPTIONS = [
   { id: 'hum', label: 'Nur Luftfeuchtigkeit' }
 ];
 
+const TIME_OPTIONS = [
+  { id: 30, label: 'Letzte 30 Werte' },
+  { id: 50, label: 'Letzte 50 Werte' },
+  { id: 100, label: 'Letzte 100 Werte' },
+  { id: 500, label: 'Letzte 500 Werte' }
+];
+
 export default function History() {
   const [data, setData] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<string>('combined');
+  const [dataCount, setDataCount] = useState<number>(window.innerWidth <= 480 ? 50 : 100);
   const [loading, setLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeDropdownRef = useRef<HTMLDivElement>(null); 
   const [dateRange, setDateRange] = useState<{from: string, to: string} | null>(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${Endpoints.History}?count=100`);
+        const response = await fetch(`${Endpoints.History}?count=${dataCount}`);
         if (response.ok) {
           const result: SensorReading[] = await response.json();
           
@@ -63,12 +73,15 @@ export default function History() {
       }
     };
     fetchHistory();
-  }, []);
+  }, [dataCount]); 
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (timeDropdownRef.current && !timeDropdownRef.current.contains(event.target as Node)) {
+        setIsTimeDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -84,6 +97,7 @@ export default function History() {
   };
 
   const selectedLabel = VIEW_OPTIONS.find(opt => opt.id === viewMode)?.label;
+  const selectedTimeLabel = TIME_OPTIONS.find(opt => opt.id === dataCount)?.label; // NEU
 
   return (
     <div className="dashboard-container">
@@ -94,7 +108,10 @@ export default function History() {
           <div className="custom-dropdown" ref={dropdownRef}>
             <button 
               className={`dropdown-trigger ${isDropdownOpen ? 'active' : ''}`}
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={() => {
+                setIsDropdownOpen(!isDropdownOpen);
+                setIsTimeDropdownOpen(false);
+              }}
             >
               <span>{selectedLabel}</span>
               <FontAwesomeIcon icon={faChevronDown} className={`arrow-icon ${isDropdownOpen ? 'rotated' : ''}`} />
@@ -109,6 +126,36 @@ export default function History() {
                     onClick={() => {
                       setViewMode(option.id);
                       setIsDropdownOpen(false);
+                    }}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="custom-dropdown" ref={timeDropdownRef}>
+            <button 
+              className={`dropdown-trigger ${isTimeDropdownOpen ? 'active' : ''}`}
+              onClick={() => {
+                setIsTimeDropdownOpen(!isTimeDropdownOpen);
+                setIsDropdownOpen(false); 
+              }}
+            >
+              <span>{selectedTimeLabel}</span>
+              <FontAwesomeIcon icon={faChevronDown} className={`arrow-icon ${isTimeDropdownOpen ? 'rotated' : ''}`} />
+            </button>
+
+            {isTimeDropdownOpen && (
+              <div className="dropdown-menu">
+                {TIME_OPTIONS.map((option) => (
+                  <div 
+                    key={option.id} 
+                    className={`dropdown-item ${dataCount === option.id ? 'selected' : ''}`}
+                    onClick={() => {
+                      setDataCount(option.id);
+                      setIsTimeDropdownOpen(false);
                     }}
                   >
                     {option.label}
