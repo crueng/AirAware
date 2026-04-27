@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { Endpoints } from '../apiConfig'; 
+import { Endpoints } from '../apiConfig';
 
 interface ApiSensorData {
   type: number;

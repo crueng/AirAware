@@ -1,13 +1,14 @@
-import { useState } from 'react'
-import { NavLink } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, Link } from 'react-router-dom'; // <-- HIER: 'Link' hinzugefügt
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import NotificationBell from '../NotificationBell/NotificationBell';
+import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { isLoggedIn } = useAuth(); 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -17,10 +18,12 @@ const Header = () => {
         <button className='menu-btn' aria-label='Menü umschalten' onClick={toggleMenu}>
           <FontAwesomeIcon icon={isMenuOpen ? faXmark : faBars} size="lg" />
         </button>
-        <h1 className='name'>AirAware</h1>
-      </div>
+        
+        <Link to="/" className="header-logo-link" onClick={closeMenu}>
+          <h1 className='name'>AirAware</h1>
+        </Link>
 
-      {/* Navigation und Glocke sind jetzt beide im rechten Container! */}
+      </div>
       <div className="header-right">
         <nav className={`desktop-nav ${isMenuOpen ? 'mobile-open' : ''}`}>
           <ul>
@@ -31,8 +34,7 @@ const Header = () => {
             <li><NavLink to="/settings" onClick={closeMenu}>Einstellungen</NavLink></li>
           </ul>
         </nav>
-        
-        <NotificationBell />
+        {isLoggedIn && <NotificationBell />}
       </div>
     </header> 
   )
