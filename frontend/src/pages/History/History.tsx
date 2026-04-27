@@ -5,6 +5,7 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import CustomDropdown from '../../components/CustomDropdown/CustomDropdown';
 import { Endpoints } from '../../apiConfig';
 import CustomButton from '../../components/CustomButton/CustomButton';
+import { useSensorData } from '../../context/SensorContext'; 
 import '../Pages.css';
 import './History.css';
 
@@ -30,6 +31,8 @@ const TIME_OPTIONS = [
 ];
 
 export default function History() {
+  const { convertTemp, tempUnit } = useSensorData(); 
+
   const [data, setData] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<string>('combined');
   const [dataCount, setDataCount] = useState<number>(window.innerWidth <= 480 ? 50 : 100);
@@ -81,6 +84,11 @@ export default function History() {
     }
   };
 
+  const chartData = data.map(d => ({
+    ...d,
+    displayTemp: d.temperatureC != null ? convertTemp(d.temperatureC) : null
+  }));
+
   return (
     <div className="dashboard-container">
       <div className="history-header-row">
@@ -107,11 +115,11 @@ export default function History() {
       <div className="chart-card">
         {loading ? (
           <div className="loading-state">Lade Diagramm-Daten...</div>
-        ) : data.length === 0 ? (
+        ) : chartData.length === 0 ? (
           <div className="empty-state">Keine Messdaten vorhanden.</div>
         ) : (
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+            <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis 
                 dataKey="time" 
@@ -145,7 +153,7 @@ export default function History() {
                 cursor={{ stroke: '#E5E7EB', strokeWidth: 2 }}
                 contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #E5E7EB', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
                 formatter={(value: any, name: any) => [
-                  `${value} ${name === 'Temperatur' ? '°C' : '%'}`, 
+                  `${value} ${name === 'Temperatur' ? `°${tempUnit}` : '%'}`, 
                   name 
                 ]}
               />
@@ -156,7 +164,7 @@ export default function History() {
                 <Line 
                   yAxisId="left" 
                   type="monotone" 
-                  dataKey="temperatureC" 
+                  dataKey="displayTemp" 
                   name="Temperatur" 
                   stroke="#EE6C4D" 
                   strokeWidth={3} 

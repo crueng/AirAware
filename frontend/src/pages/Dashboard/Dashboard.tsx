@@ -5,7 +5,7 @@ import '../Pages.css';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { temp, humidity, loading } = useSensorData();
+  const { temp, humidity, loading, tempUnit, convertTemp } = useSensorData();
 
   if (loading) return <div className="main-content">Lade Sensordaten...</div>;
 
@@ -21,11 +21,11 @@ const Dashboard = () => {
           </div>
           
           <GaugeChart 
-            value={temp} 
+            value={convertTemp(temp)} 
             humidity={humidity} 
-            label="°C" 
-            min={10} 
-            max={40} 
+            label={`°${tempUnit}`} 
+            min={convertTemp(10)} 
+            max={convertTemp(40)} 
           />
         </div>
 

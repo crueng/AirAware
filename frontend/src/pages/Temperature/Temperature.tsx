@@ -2,10 +2,10 @@ import GaugeChart from '../../components/GaugeChart/GaugeChart';
 import TemperatureLegend from '../../components/TemperatureLegend/TemperatureLegend';
 import { useSensorData } from '../../context/SensorContext'; 
 import '../Pages.css';
-import '.././Dashboard/Dashboard.css';
+import '../Dashboard/Dashboard.css'; 
 
 const Temperature = () => {
-  const { temp, loading } = useSensorData();
+  const { temp, loading, tempUnit, convertTemp } = useSensorData();
   
   if (loading) return <div className="main-content">Lade Sensordaten...</div>;
 
@@ -21,10 +21,10 @@ const Temperature = () => {
           </div>
           
           <GaugeChart 
-            value={temp}
-            label="°C" 
-            min={10} 
-            max={40} 
+            value={convertTemp(temp)} 
+            label={`°${tempUnit}`}   
+            min={convertTemp(10)}     
+            max={convertTemp(40)}     
           />
         </div>
 

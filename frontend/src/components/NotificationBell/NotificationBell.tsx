@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faExclamationTriangle, faTimes, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faTimes, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { useSensorData } from "../../context/SensorContext";
 import { Endpoints } from "../../apiConfig";
 import { useAuth } from "../../context/AuthContext";
+import Toast from "../Toast/Toast"; 
 import "./NotificationBell.css";
 
 interface ApiAlert {
@@ -14,6 +16,11 @@ interface ApiAlert {
 
 const getLocalReadIds = (): string[] => JSON.parse(localStorage.getItem('read_alarms') || '[]');
 const getLocalDeletedIds = (): string[] => JSON.parse(localStorage.getItem('deleted_alarms') || '[]');
+const fixEncoding = (text: string) => {
+  if (!text) return text;
+  let fixed = text.replace(/\[(\d+)\s*\uFFFD\s*(\d+)\]/g, '[$1, $2]');
+  return fixed.replace(/\uFFFD/g, 'ß'); 
+};
 
 const NotificationBell = () => {
   const [alerts, setAlerts] = useState<ApiAlert[]>([]);
@@ -21,8 +28,8 @@ const NotificationBell = () => {
   const [livePopup, setLivePopup] = useState<ApiAlert | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const lastSeenAlertId = useRef<string | null>(null);
-
   const { token, isLoggedIn } = useAuth();
+  const { refreshInterval } = useSensorData();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -62,7 +69,6 @@ const NotificationBell = () => {
           const newest = processedData[0];
           if (lastSeenAlertId.current !== null && lastSeenAlertId.current !== newest.id && !newest.isRead) {
             setLivePopup(newest);
-            setTimeout(() => setLivePopup(null), 8000);
           }
           lastSeenAlertId.current = newest.id;
         }
@@ -76,7 +82,7 @@ const NotificationBell = () => {
 
   useEffect(() => {
     fetchAlerts();
-    const interval = setInterval(fetchAlerts, 15000);
+    const interval = setInterval(fetchAlerts, refreshInterval);
     const handleSync = () => {
       const readIds = getLocalReadIds();
       const deletedIds = getLocalDeletedIds();
@@ -96,7 +102,7 @@ const NotificationBell = () => {
       clearInterval(interval);
       window.removeEventListener('sync_alarms', handleSync);
     };
-  }, [token, isLoggedIn]);
+  }, [token, isLoggedIn, refreshInterval]);
 
   const markAsRead = (id: string) => {
     const readIds = getLocalReadIds();
@@ -125,17 +131,11 @@ const NotificationBell = () => {
   return (
     <>
       {livePopup && (
-        <div className="alarm-popup" onClick={() => { markAsRead(livePopup.id); setLivePopup(null); setIsOpen(true); }}>
-          <div className="popup-header-row">
-            <div className="popup-title">
-              <FontAwesomeIcon icon={faExclamationTriangle} /> Neuer Sensor-Alarm!
-            </div>
-            <button className="popup-close-btn" onClick={(e) => { e.stopPropagation(); setLivePopup(null); }}>
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </div>
-          <div className="popup-message">{livePopup.message}</div>
-        </div>
+        <Toast 
+          message={fixEncoding(livePopup.message)} 
+          type="error" 
+          onClose={() => setLivePopup(null)} 
+        />
       )}
 
       <div className="notification-container" ref={dropdownRef}>
@@ -164,7 +164,7 @@ const NotificationBell = () => {
                       <div className="alert-time">
                         {new Date(alert.triggeredAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr
                       </div>
-                      <div className="alert-message">{alert.message}</div>
+                      <div className="alert-message">{fixEncoding(alert.message)}</div>
                     </div>
                     
                     <div className="alert-actions-group">
