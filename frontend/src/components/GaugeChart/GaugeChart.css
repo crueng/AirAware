@@ -13,22 +13,35 @@
   transform: translate(-50%, -50%);
   text-align: center;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem; 
 }
 
 .gauge-value {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 7vw, 2.5rem); 
   font-weight: 700;
   color: var(--navy-900);
   line-height: 1;
+  margin: 0;
 }
 
 .gauge-humidity {
-  font-size: 1rem;
+  font-size: clamp(0.7rem, 3.5vw, 1rem); 
   color: var(--text-footer-color);
   font-weight: 500;
-  margin-top: 0.5rem;
+  margin: 0; 
+  line-height: 1.2;
+  white-space: nowrap; 
 }
 
 .gauge-pie-chart {
   pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .gauge-text-container {
+    top: 75%; 
+  }
 }

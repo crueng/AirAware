@@ -136,3 +136,17 @@
     border-bottom: none;
   }
 }
+
+@media (max-width: 400px) {
+  .top-header {
+    padding: 1rem; 
+  }
+  
+  .name {
+    font-size: 1.3rem;
+  }
+  
+  .header-right {
+    gap: 0.8rem; 
+  }
+}

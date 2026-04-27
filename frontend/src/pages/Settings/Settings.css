@@ -277,15 +277,6 @@
   white-space: nowrap;
 }
 
-@media (max-width: 810px) {
-  .locked-container {
-    flex-direction: column;
-    text-align: center;
-    padding: 2rem;
-    gap: 1.5rem;
-  }
-}
-
 .logout-btn {
   display: flex;
   align-items: center;
@@ -310,4 +301,34 @@
 
 .logout-btn:active {
   transform: scale(0.98);
+}
+
+@media (max-width: 810px) {
+  .locked-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .threshold-inputs {
+    flex-direction: column; 
+    gap: 0.8rem;
+  }
+  
+  .input-wrapper {
+    width: 100%;
+  }
+  
+  .locked-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .settings-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 }

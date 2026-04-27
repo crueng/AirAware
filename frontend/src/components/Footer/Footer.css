@@ -86,3 +86,21 @@
     font-size: 1.8rem;
   }
 }
+
+@media (max-width: 400px) {
+  .tab-bar {
+    padding: 1.5rem 1rem;
+  }
+  
+  .footer-heading {
+    font-size: 1.5rem; 
+  }
+  
+  .tab-item__icon-wrapper {
+    font-size: 1.1rem;
+  }
+  
+  .tab-item__label {
+    font-size: 0.6rem;
+  }
+}

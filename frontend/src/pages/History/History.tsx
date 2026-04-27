@@ -133,13 +133,32 @@ export default function History() {
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis dataKey="time" stroke="#6B7280" fontSize={12} tickMargin={10} />
+              <XAxis 
+                dataKey="time" 
+                stroke="#6B7280" 
+                fontSize={12} 
+                tickMargin={10} 
+                minTickGap={30}
+              />
               
               {(viewMode === 'temp' || viewMode === 'combined') && (
-                <YAxis yAxisId="left" stroke="#EE6C4D" fontSize={12} domain={['auto', 'auto']} tickFormatter={(val) => `${val}°`} />
+                <YAxis 
+                  yAxisId="left" 
+                  stroke="#EE6C4D" 
+                  fontSize={12} 
+                  domain={['auto', 'auto']} 
+                  tickFormatter={(val) => `${val}°`} 
+                />
               )}
               {(viewMode === 'hum' || viewMode === 'combined') && (
-                <YAxis yAxisId="right" orientation="right" stroke="#3B82F6" fontSize={12} domain={[0, 100]} tickFormatter={(val) => `${val}%`} />
+                <YAxis 
+                  yAxisId="right" 
+                  orientation="right" 
+                  stroke="#3B82F6" 
+                  fontSize={12} 
+                  domain={[0, 100]} 
+                  tickFormatter={(val) => `${val}%`} 
+                />
               )}
 
               <Tooltip 
