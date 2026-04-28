@@ -13,6 +13,7 @@ interface SensorContextType {
   temp: number;
   humidity: number;
   loading: boolean;
+  isOffline: boolean;
   refreshInterval: number;
   setRefreshInterval: (interval: number) => void;
   tempUnit: TempUnit;
@@ -26,6 +27,7 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
   const [temp, setTemp] = useState<number>(0);
   const [humidity, setHumidity] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [isOffline, setIsOffline] = useState(false); 
   
   const [refreshInterval, setRefreshInterval] = useState<number>(() => {
     const savedInterval = localStorage.getItem('app_refresh_interval');
@@ -54,8 +56,6 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
     const abortController = new AbortController(); 
 
     const fetchLatestData = async () => {
-      console.log(`⏱️ Fetche neue Daten... (Aktuelles Intervall: ${refreshInterval} ms)`);
-      
       try {
         const response = await fetch(Endpoints.LatestSensorData, {
           signal: abortController.signal
@@ -70,24 +70,21 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
         const tempObj = data.find(d => d.type === 0);
         const humObj = data.find(d => d.type === 1);
 
-        if (tempObj && tempObj.temperatureC != null) {
-          setTemp(tempObj.temperatureC);
-        }
-        if (humObj && humObj.humidityPercent != null) {
-          setHumidity(humObj.humidityPercent);
-        }
+        if (tempObj && tempObj.temperatureC != null) setTemp(tempObj.temperatureC);
+        if (humObj && humObj.humidityPercent != null) setHumidity(humObj.humidityPercent);
         
+        setIsOffline(false);
         setLoading(false);
       } catch (error: any) {
         if (error.name === 'AbortError') return;
         
         console.error("Fehler beim Laden der Sensordaten:", error);
+        setIsOffline(true);
         setLoading(false);
       }
     };
 
     fetchLatestData();
-
     const intervalId = setInterval(fetchLatestData, refreshInterval);
 
     return () => {
@@ -101,6 +98,7 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
       temp, 
       humidity, 
       loading, 
+      isOffline, 
       refreshInterval, 
       setRefreshInterval,
       tempUnit,
@@ -114,8 +112,6 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
 
 export const useSensorData = () => {
   const context = useContext(SensorContext);
-  if (context === undefined) {
-    throw new Error('useSensorData muss innerhalb eines SensorProviders verwendet werden');
-  }
+  if (context === undefined) throw new Error('useSensorData error');
   return context;
 };

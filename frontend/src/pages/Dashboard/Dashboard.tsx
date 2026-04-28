@@ -1,11 +1,12 @@
 import GaugeChart from '../../components/GaugeChart/GaugeChart';
 import TemperatureLegend from '../../components/TemperatureLegend/TemperatureLegend';
+import OfflineCard from '../../components/OfflineCard/OfflineCard'; // NEU IMPORTIERT
 import { useSensorData } from '../../context/SensorContext'; 
 import '../Pages.css';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { temp, humidity, loading, tempUnit, convertTemp } = useSensorData();
+  const { temp, humidity, loading, tempUnit, convertTemp, isOffline } = useSensorData();
 
   if (loading) return <div className="main-content">Lade Sensordaten...</div>;
 
@@ -14,22 +15,27 @@ const Dashboard = () => {
       <h2 className="page-title">Dashboard</h2>
       
       <div className="dashboard-content">
-        <div className="tacho-card">
-          <div className="live-badge">
-            <span className="live-dot"></span>
-            LIVE
+        {isOffline ? (
+          <OfflineCard />
+        ) : (
+          <div className="tacho-card">
+            <div className="live-badge">
+              <span className="live-dot"></span>
+              LIVE
+            </div>
+            
+            <GaugeChart 
+              value={convertTemp(temp)} 
+              humidity={humidity} 
+              label={`°${tempUnit}`} 
+              min={convertTemp(10)} 
+              max={convertTemp(40)} 
+            />
           </div>
-          
-          <GaugeChart 
-            value={convertTemp(temp)} 
-            humidity={humidity} 
-            label={`°${tempUnit}`} 
-            min={convertTemp(10)} 
-            max={convertTemp(40)} 
-          />
-        </div>
+        )}
 
         <TemperatureLegend />
+
       </div>
     </div>
   );
