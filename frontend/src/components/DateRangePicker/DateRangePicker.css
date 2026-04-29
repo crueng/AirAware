@@ -1,0 +1,108 @@
+.date-picker-group {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid var(--navy-100);
+  border-radius: 8px;
+  opacity: 0;
+  max-width: 0;
+  padding: 0;
+  margin-right: 0;
+  transform: translateX(-10px);
+  transition:
+    max-width 0.5s ease,
+    opacity 0.4s ease,
+    transform 0.4s ease,
+    padding 0.5s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 10;
+  overflow: visible !important;
+}
+
+.date-picker-group.is-visible {
+  opacity: 1;
+  max-width: 500px;
+  transform: translateX(0);
+  padding: 0 12px;
+}
+
+.date-picker-group.is-visible:hover {
+  border-color: var(--primary-color);
+}
+
+.react-datepicker-wrapper {
+  width: auto;
+}
+
+.custom-date-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--navy-900);
+  font-family: inherit;
+  font-size: 0.9rem;
+  width: 90px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 500;
+}
+
+.date-separator {
+  color: var(--navy-100);
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+.calendar {
+  font-family: "Inter", sans-serif !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--navy-100) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+}
+
+.calendar .react-datepicker__header {
+  background-color: white !important;
+  border-bottom: 1px solid var(--navy-100) !important;
+  padding-top: 12px !important;
+}
+
+.calendar .react-datepicker__day-name {
+  color: var(--gray-500) !important;
+  font-weight: 600 !important;
+}
+
+.calendar .react-datepicker__day {
+  color: var(--navy-900) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.calendar .react-datepicker__day:hover {
+  background-color: #fdf2f0 !important;
+  color: var(--primary-color) !important;
+}
+
+.calendar .react-datepicker__day--selected,
+.calendar .react-datepicker__day--range-start,
+.calendar .react-datepicker__day--range-end,
+.calendar .react-datepicker__day--keyboard-selected,
+.react-datepicker__day--in-selecting-range {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+.calendar .react-datepicker__day--in-range {
+  background-color: #fdf2f0 !important;
+  color: var(--primary-color) !important;
+}
+
+.calendar .react-datepicker__day--today {
+  border: 1px solid var(--primary-color) !important;
+  background: none !important;
+  color: var(--primary-color) !important;
+  font-weight: bold !important;
+}
