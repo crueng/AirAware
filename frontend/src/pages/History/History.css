@@ -1,10 +1,15 @@
 .history-header-row {
   display: flex;
-  flex-direction: column; 
-  align-items: center;    
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
   margin-bottom: 24px;
-  gap: 16px;
+}
+
+.history-header-row .page-title {
+  margin-bottom: 0;
+  text-align: left;
 }
 
 .history-controls {
@@ -14,6 +19,20 @@
   justify-content: center;
   gap: 8px;
   transition: all 0.5s ease;
+}
+
+.history-controls-wrapper {
+  width: auto; 
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; 
+  gap: 12px;
+}
+
+.date-picker-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end; 
 }
 
 .arrow-icon {
@@ -90,20 +109,6 @@
   line-height: 1.6;
 }
 
-@media (max-width: 810px) {
-  .recharts-line-dots {
-    display: none;
-  }
-  
-  .chart-card {
-    padding: 16px 8px;
-  }
-  
-  .recharts-default-legend {
-    font-size: 12px !important;
-  }
-}
-
 @media (max-width: 560px) {
   .history-controls {
     flex-direction: column; 
@@ -121,5 +126,71 @@
 
   .chart-card {
     padding: 16px 0px;
+  }
+
+  .date-picker-container {
+    justify-content: center; 
+  }
+}
+
+.chart-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; 
+  width: 100%;
+  background-color: transparent;
+}
+
+.chart-loading-spinner {
+  font-size: 2.5rem;
+  color: var(--primary-color); 
+  margin-bottom: 1rem;
+}
+
+.chart-loading-state p {
+  color: var(--gray-500);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  animation: pulseText 2s infinite ease-in-out;
+}
+
+@keyframes pulseText {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@media (max-width: 810px) {
+  .recharts-line-dots {
+    display: none;
+  }
+  
+  .chart-card {
+    padding: 16px 8px;
+  }
+  
+  .recharts-default-legend {
+    font-size: 12px !important;
+  }
+
+  .history-header-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .history-header-row .page-title {
+    text-align: center;
+  }
+  
+  .history-controls-wrapper {
+    align-items: center;
+  }
+
+  .date-picker-container {
+    justify-content: center;
   }
 }

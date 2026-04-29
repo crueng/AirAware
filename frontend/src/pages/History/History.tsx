@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faChartLine, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { Endpoints } from '../../apiConfig';
 import { useSensorData } from '../../context/SensorContext'; 
 import CustomButton from '../../components/CustomButton/CustomButton';
@@ -115,7 +115,9 @@ export default function History() {
       } catch (error) {
         console.error("Fehler beim Laden der Historie:", error);
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 800);
       }
     };
     fetchHistory();
@@ -142,37 +144,44 @@ export default function History() {
     <div className="dashboard-container">
       <div className="history-header-row">
         <h2 className="page-title">Historischer Verlauf</h2>
-        
-        <div className="history-controls">  
-          <CustomDropdown 
-            options={VIEW_OPTIONS}
-            value={viewMode}
-            onChange={(val) => setViewMode(val as string)}
-          />
-          <CustomDropdown 
-            options={TIME_OPTIONS}
-            value={dataCount}
-            onChange={(val) => setDataCount(Number(val))}
-          />
-          
-          {dataCount === 0 && (
-            <DateRangePicker 
-              key="range-picker" 
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
+
+        <div className="history-controls-wrapper">
+          <div className="history-controls">
+            <CustomDropdown 
+              options={VIEW_OPTIONS}
+              value={viewMode}
+              onChange={(val) => setViewMode(val as string)}
             />
+            <CustomDropdown 
+              options={TIME_OPTIONS}
+              value={dataCount}
+              onChange={(val) => setDataCount(Number(val))}
+            />
+            <CustomButton onClick={handleDownloadCsv}>
+              <FontAwesomeIcon icon={faDownload} /> CSV Export
+            </CustomButton>
+          </div>
+
+          {dataCount === 0 && (
+            <div className="date-picker-container">
+              <DateRangePicker 
+                key="range-picker"
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={setStartDate}
+                onEndDateChange={setEndDate}
+              />
+            </div>
           )}
-          <CustomButton onClick={handleDownloadCsv}>
-            <FontAwesomeIcon icon={faDownload} /> CSV Export
-          </CustomButton>
         </div>
       </div>
 
       <div className="chart-card">
         {loading ? (
-          <div className="loading-state">Lade Diagramm-Daten...</div>
+          <div className="chart-loading-state">
+            <FontAwesomeIcon icon={faSpinner} spin className="chart-loading-spinner" />
+            <p>Lade Diagramm-Daten...</p>
+          </div>
         ) : chartData.length === 0 ? (
           <div className="empty-chart-state">
             <div className="empty-icon-wrapper">
