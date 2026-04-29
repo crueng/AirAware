@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faTimes, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faTimes, faCheck, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { useSensorData } from "../../context/SensorContext";
 import { Endpoints } from "../../apiConfig";
 import { useAuth } from "../../context/AuthContext";
@@ -156,7 +156,13 @@ const NotificationBell = () => {
 
             <div className="alert-list">
               {alerts.length === 0 ? (
-                <div className="empty-state-text">Keine Alarme vorhanden.</div>
+                <div className="empty-bell-state">
+                  <div className="empty-bell-icon-wrapper">
+                    <FontAwesomeIcon icon={faCheckCircle} className="empty-bell-icon" />
+                  </div>
+                  <h4>Alles im grünen Bereich!</h4>
+                  <p>Aktuell gibt es keine Warnungen.</p>
+                </div>
               ) : (
                 alerts.slice(0, 5).map((alert) => (
                   <div key={alert.id} className={`alert-item ${!alert.isRead ? "unread" : ""}`}>
