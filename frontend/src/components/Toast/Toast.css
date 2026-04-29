@@ -14,7 +14,7 @@
 }
 
 .toast-popup.success { border-left: 6px solid #10b981; }
-.toast-popup.error { border-left: 6px solid #ef4444; }
+.toast-popup.error { border-left: 6px solid var(--error-color); }
 
 .toast-content {
   display: flex;
@@ -27,7 +27,7 @@
 }
 
 .success .toast-icon { color: #10b981; }
-.error .toast-icon { color: #ef4444; }
+.error .toast-icon { color: var(--error-color); }
 
 .toast-message {
   font-size: 1.05rem; 

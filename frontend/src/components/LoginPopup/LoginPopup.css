@@ -48,7 +48,7 @@
 
 .popup-description {
   font-size: 0.95rem;
-  color: #6B7280;
+  color: var(--gray-500);
   line-height: 1.5;
   margin-top: 0.5rem;
   margin-bottom: 1.5rem;
@@ -71,7 +71,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.8rem 1rem;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--gray-200);
   border-radius: 8px;
   font-size: 1rem;
   outline: none;
@@ -110,4 +110,24 @@
 .popup-submit-btn {
   flex: 1;
   padding: 0.8rem;
+}
+
+.login-error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background-color: #fef2f2;
+  color: #ef4444;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1.2rem;
+  border-left: 4px solid #ef4444;
+  animation: dropFadeIn 0.3s ease-out forwards;
+}
+
+.login-error-message svg {
+  margin-top: 0.15rem;
+  font-size: 1rem;
 }

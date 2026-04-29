@@ -1,4 +1,4 @@
-const BASE_URL = 'https://api.air-aware.de/apiX';    
+const BASE_URL = 'https://api.air-aware.de/api';    
 
 export const Endpoints = {
   LatestSensorData: `${BASE_URL}/SensorData/latest`,

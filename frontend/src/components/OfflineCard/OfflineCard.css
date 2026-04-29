@@ -18,7 +18,7 @@
 
 .offline-icon-wrapper {
   background: #fef2f2;
-  color: #ef4444;
+  color: var(--error-color);
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -42,7 +42,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  color: #ef4444;
+  color: var(--error-color);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -54,7 +54,7 @@
 }
 
 .offline-card p {
-  color: #6b7280;
+  color: var(--gray-500);
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.6;

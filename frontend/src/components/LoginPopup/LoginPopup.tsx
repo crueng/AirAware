@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import './Login.css';
+import './LoginPopup.css';
 import { useAuth } from '../../context/AuthContext';
 import CustomButton from '../CustomButton/CustomButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 interface LoginPopupProps {
   onClose: () => void;
@@ -14,20 +14,23 @@ const LoginPopup = ({ onClose, onSuccess }: LoginPopupProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null); 
   const [mouseDownOnOverlay, setMouseDownOnOverlay] = useState(false);
   const { login } = useAuth(); 
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMsg(null); 
     
-    const success = await login(username, password);
+    const result = await login(username, password);
     
     setIsLoading(false);
 
-    if (success) {
+    if (result.success) {
       onSuccess();
     } else {
-      alert("Login fehlgeschlagen! Bitte überprüfe Benutzernamen und Passwort.");
+      setErrorMsg(result.message || "Ein unbekannter Fehler ist aufgetreten.");
     }
   };
 
@@ -65,6 +68,13 @@ const LoginPopup = ({ onClose, onSuccess }: LoginPopupProps) => {
         <p className="popup-description">
           Bitte gib deine Zugangsdaten ein.
         </p>
+        
+        {errorMsg && (
+          <div className="login-error-message">
+            <FontAwesomeIcon icon={faExclamationCircle} />
+            <span>{errorMsg}</span>
+          </div>
+        )}
         
         <form onSubmit={handleLogin} className="login-form">
           <input 

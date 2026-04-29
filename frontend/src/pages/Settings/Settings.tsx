@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faUnlock, faBell, faSpinner, faClock } from "@fortawesome/free-solid-svg-icons";
-import LoginPopup from "../../components/LoginPopup/Login";
+import LoginPopup from "../../components/LoginPopup/LoginPopup";
 import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 import RegisterUser from "../../components/RegisterUser/RegisterUser"; 
 import DeleteUser from "../../components/DeleteUser/DeleteUser"; 

@@ -48,7 +48,7 @@
 
 .settings-row-info p {
   margin: 0;
-  color: #6B7280;
+  color: var(--gray-500);
   font-size: 0.85rem;
 }
 
@@ -101,7 +101,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #6B7280;
+  color: var(--gray-500);
   font-weight: 500;
   padding: 2rem;
   background-color: white;
@@ -200,7 +200,7 @@
 .input-prefix {
   background-color: var(--gray-100);
   padding: 0.6rem 0.8rem;
-  color: #6B7280;
+  color: var(--gray-500);
   font-size: 0.85rem;
   font-weight: 600;
   border-right: 1px solid var(--navy-100);
@@ -239,7 +239,7 @@
 
 .locked-icon {
   color: #9CA3AF;
-  background-color: #F9FAFB;
+  background-color: var(--gray-100);
   padding: 1.2rem;
   border-radius: 16px;
   display: flex;
@@ -261,7 +261,7 @@
 }
 
 .locked-description {
-  color: #6B7280;
+  color: var(--gray-500);
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.6;
@@ -272,7 +272,7 @@
   align-items: center;
   gap: 0.5rem;
   background-color: transparent;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--gray-200);
   color: #4B5563;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -284,7 +284,7 @@
 
 .logout-btn:hover {
   background-color: #FEF2F2;
-  color: #EF4444;
+  color: var(--error-color);
   border-color: #FECACA;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
 }

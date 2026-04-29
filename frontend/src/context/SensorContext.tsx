@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { Endpoints } from '../apiConfig';
+import { useAuth } from './AuthContext'; 
 
 interface ApiSensorData {
   type: number;
@@ -24,10 +25,12 @@ interface SensorContextType {
 const SensorContext = createContext<SensorContextType | undefined>(undefined);
 
 export const SensorProvider = ({ children }: { children: ReactNode }) => {
+  const { logout, isLoggedIn } = useAuth(); 
+
   const [temp, setTemp] = useState<number>(0);
   const [humidity, setHumidity] = useState<number>(0);
   const [loading, setLoading] = useState(true);
-  const [isOffline, setIsOffline] = useState(false); 
+  const [isOffline, setIsOffline] = useState(false);
   
   const [refreshInterval, setRefreshInterval] = useState<number>(() => {
     const savedInterval = localStorage.getItem('app_refresh_interval');
@@ -37,6 +40,13 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
   const [tempUnit, setTempUnitState] = useState<TempUnit>(() => {
     return (localStorage.getItem('temp_unit') as TempUnit) || 'C';
   });
+
+  useEffect(() => {
+    if (isOffline && isLoggedIn) {
+      console.warn("Backend offline: Automatischer Logout wird durchgeführt, um Inkonsistenzen zu vermeiden.");
+      logout();
+    }
+  }, [isOffline, isLoggedIn, logout]);
 
   const setTempUnit = (unit: TempUnit) => {
     setTempUnitState(unit);
@@ -49,10 +59,6 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem('app_refresh_interval', refreshInterval.toString());
-  }, [refreshInterval]);
-
-  useEffect(() => {
     const abortController = new AbortController(); 
 
     const fetchLatestData = async () => {
@@ -61,12 +67,9 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
           signal: abortController.signal
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP Fehler! Status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP Fehler! Status: ${response.status}`);
 
         const data: ApiSensorData[] = await response.json();
-
         const tempObj = data.find(d => d.type === 0);
         const humObj = data.find(d => d.type === 1);
 
@@ -76,9 +79,7 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
         setIsOffline(false);
         setLoading(false);
       } catch (error: any) {
-        if (error.name === 'AbortError') return;
-        
-        console.error("Fehler beim Laden der Sensordaten:", error);
+        if (error.name === 'AbbortError') return;
         setIsOffline(true);
         setLoading(false);
       }
@@ -86,7 +87,6 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
 
     fetchLatestData();
     const intervalId = setInterval(fetchLatestData, refreshInterval);
-
     return () => {
       clearInterval(intervalId);
       abortController.abort();
@@ -95,15 +95,8 @@ export const SensorProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <SensorContext.Provider value={{ 
-      temp, 
-      humidity, 
-      loading, 
-      isOffline, 
-      refreshInterval, 
-      setRefreshInterval,
-      tempUnit,
-      setTempUnit,
-      convertTemp
+      temp, humidity, loading, isOffline, refreshInterval, 
+      setRefreshInterval, tempUnit, setTempUnit, convertTemp
     }}>
       {children}
     </SensorContext.Provider>
