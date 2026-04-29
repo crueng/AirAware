@@ -23,6 +23,13 @@
 #define WIFI_FAIL_BIT       BIT1
 #define WIFI_CONNECT_RETRIES 3
 
+static wifi_connected_cb_t s_connected_cb = NULL;
+
+void wifi_set_connected_callback(wifi_connected_cb_t cb)
+{
+	s_connected_cb = cb;
+}
+
 static const char *TAG = "wifi_prov";
 static EventGroupHandle_t s_wifi_event_group;
 static int s_retry_count = 0;
@@ -138,25 +145,36 @@ static const char *HTML_PAGE =
 "</script></body></html>";
 
 // Event Handler
-void wifi_event_handler(void *arg, esp_event_base_t base,
-                               int32_t event_id, void *event_data)
+void wifi_event_handler(void *arg, esp_event_base_t base, int32_t event_id, void *event_data)
 {
-    if (base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+    if (base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
+    {
         esp_wifi_connect();
-    } else if (base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (s_retry_count < WIFI_CONNECT_RETRIES) {
+    }
+	else if (base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
+	{
+        if (s_retry_count < WIFI_CONNECT_RETRIES)
+        {
             esp_wifi_connect();
             s_retry_count++;
             ESP_LOGI(TAG, "Retry %d/%d...", s_retry_count, WIFI_CONNECT_RETRIES);
-        } else
+        }
+    	else
         {
-        	if (s_wifi_event_group == NULL) {
+        	if (s_wifi_event_group == NULL)
+        	{
         		s_wifi_event_group = xEventGroupCreate();
         		assert(s_wifi_event_group);
         	}
-            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+        	xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+        	if (s_connected_cb)
+        	{
+        		s_connected_cb();
+        	}
         }
-    } else if (base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+    }
+	else if (base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+	{
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         ESP_LOGI(TAG, "Got IP: " IPSTR, IP2STR(&event->ip_info.ip));
         s_retry_count = 0;

@@ -1,12 +1,17 @@
-# See the build system documentation in IDF programming guide
-# for more information about component CMakeLists.txt files.
-
 idf_component_register(
         SRCS
         "main.c"
         "wifi.c"
-        "hosting.c"
+        "mqtt_manager.c"
         "Sensor.c"
-        INCLUDE_DIRS
-        "."
+        INCLUDE_DIRS "."
+        REQUIRES
+        nvs_flash
+        esp_wifi
+        esp_netif
+        esp_http_server
+        esp_event
+        mqtt          # ← das fehlte
+        esp_adc
+        driver
 )
