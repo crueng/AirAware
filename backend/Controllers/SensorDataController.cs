@@ -32,11 +32,13 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     }
 
     /// <summary>
-    /// Gibt die Messhistorie zurück, optional gefiltert nach Sensortyp in api swagger als Dropdown gelöst.
+    /// Gibt die Messhistorie zurück, optional gefiltert nach Sensortyp und Zeitraum.
     /// </summary>
     [HttpGet("history")]
     public async Task<ActionResult<IEnumerable<SensorReading>>> GetHistory(
         [FromQuery] SensorType? type = null,
+        [FromQuery] DateTime? from = null,
+        [FromQuery] DateTime? to = null,
         [FromQuery] int count = 50)
     {
         IQueryable<SensorReading> query = db.SensorReadings
@@ -44,6 +46,11 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
 
         if (type.HasValue)
             query = query.Where(r => r.Type == type.Value);
+
+        if (from.HasValue)
+            query = query.Where(r => r.Timestamp >= from.Value.ToUniversalTime());
+        if (to.HasValue)
+            query = query.Where(r => r.Timestamp <= to.Value.ToUniversalTime());
 
         var result = await query.Take(count).ToListAsync();
         return Ok(result);
