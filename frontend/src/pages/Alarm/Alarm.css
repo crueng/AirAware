@@ -59,7 +59,7 @@
   font-size: 1.5rem;
 }
 
-.total-icon { background-color: #fef2f2; color: #ef4444; }
+.total-icon { background-color: #fef2f2; color: var(--error-color); }
 .temp-icon { background-color: #fff7ed; color: #f97316; }
 .hum-icon { background-color: #f0f9ff; color: #0ea5e9; }
 
@@ -187,11 +187,11 @@
 
 .alarm-row-time {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--gray-500);
 }
 
 .badge-new {
-  background-color: #ef4444;
+  background-color: var(--error-color);
   color: white;
   font-size: 0.7rem;
   padding: 2px 6px;
@@ -215,12 +215,12 @@
 }
 
 .delete-btn {
-  color: #d1d5db;
+  color: var(--gray-200);
 }
 
 .delete-btn:hover {
   background-color: #fee2e2;
-  color: #ef4444;
+  color: var(--error-color);
 }
 
 .check-btn {
@@ -237,7 +237,7 @@
   padding: 3rem;
   color: var(--text-gray);
   font-style: italic;
-  background-color: #f9fafb;
+  background-color: var(--gray-100);
   border-radius: 12px;
-  border: 1px dashed #d1d5db;
+  border: 1px dashed var(--gray-200);
 }

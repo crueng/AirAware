@@ -6,6 +6,7 @@ export const Endpoints = {
   Alerts: `${BASE_URL}/SensorData/alerts`,
   Login: `${BASE_URL}/Auth/login`,
   Register: `${BASE_URL}/Auth/register`, 
+  DeleteUser: (username: string) => `${BASE_URL}/Auth/user/${username}`,
   History: `${BASE_URL}/SensorData/history`,
   ReportCsv: `${BASE_URL}/SensorData/report/csv`,
 };

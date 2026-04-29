@@ -1,0 +1,25 @@
+.delete-input-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.delete-btn.custom-btn {
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+}
+
+.delete-btn.custom-btn:hover:not(:disabled) {
+  background-color: #e53e3e;
+  color: white;
+  border-color: #e53e3e;
+}
+
+@media (max-width: 600px) {
+  .delete-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

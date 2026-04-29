@@ -11,8 +11,8 @@
   --mint-100: #E0FBFC;
   --gray-600: #4B5563;
   --gray-500: #6B7280;
-  --gray-300: #A7ACB6;
-  --gray-100: #F4F8F9;
+  --gray-200: #D1D5DB;
+  --gray-100: #F9FAFB;
   --green-500: #22C55E;
   --green-100: #F0FDF4;
   --orange-500: #EE6C4D;
@@ -30,6 +30,8 @@
   --text-color: var(--gray-600);
   --text-footer-color: var(--gray-600);
   --text-settings-description: var(--gray-500);
+
+  --error-color: var(--red-500);
 }
 
 * {

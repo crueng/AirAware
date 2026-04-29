@@ -67,7 +67,7 @@
 }
 
 .custom-dropdown-component .dropdown-item:hover {
-  background-color: var(--gray-100);
+  background-color: var(--gray-200);
   color: var(--navy-900);
 }
 

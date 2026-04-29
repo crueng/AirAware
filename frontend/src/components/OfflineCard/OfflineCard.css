@@ -1,0 +1,62 @@
+.offline-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem; 
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);
+  border: 1px solid #fee2e2;
+  color: var(--navy-900);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 600px;
+  min-height: 350px; 
+}
+
+.offline-icon-wrapper {
+  background: #fef2f2;
+  color: var(--error-color);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.offline-cross {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--error-color);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.offline-card h3 {
+  font-size: 1.35rem;
+  margin: 0;
+  color: #111827;
+  font-weight: 700;
+}
+
+.offline-card p {
+  color: var(--gray-500);
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 400px;
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, ResponsiveContainer } from 'recharts';
+import { useSensorData } from '../../context/SensorContext'; 
 import './GaugeChart.css';
 
 interface GaugeChartProps {
@@ -12,6 +13,7 @@ interface GaugeChartProps {
 
 const GaugeChart = ({ value, humidity, min = 0, max = 50, label }: GaugeChartProps) => {
   const [showGradient, setShowGradient] = useState(false);
+  const { convertTemp } = useSensorData(); 
 
   useEffect(() => {
     const timer = setTimeout(() => setShowGradient(true));
@@ -27,8 +29,9 @@ const GaugeChart = ({ value, humidity, min = 0, max = 50, label }: GaugeChartPro
     return showGradient ? `var(${targetColor})` : 'var(--temp-normal)';
   };
 
+  const isTemp = label.includes('°');
   const data = [
-    { value: Math.max(0, value - min), fill: label === '°C' ? 'url(#tempGradient)' : 'var(--primary-color)' }, 
+    { value: Math.max(0, value - min), fill: isTemp ? 'url(#tempGradient)' : 'var(--primary-color)' }, 
     { value: Math.max(0, max - value), fill: 'var(--navy-100)' } 
   ];
 
@@ -43,12 +46,12 @@ const GaugeChart = ({ value, humidity, min = 0, max = 50, label }: GaugeChartPro
               x1="0" y1="0" x2="100%" y2="0"
             >
               <stop offset="0%" style={{ stopColor: getColor('--temp-cold'), transition: 'stop-color 1s ease-in-out' }} />
-              <stop offset={getOffset(18)} style={{ stopColor: getColor('--temp-cold'), transition: 'stop-color 1s ease-in-out' }} />
+              <stop offset={getOffset(convertTemp(18))} style={{ stopColor: getColor('--temp-cold'), transition: 'stop-color 1s ease-in-out' }} />
               
-              <stop offset={getOffset(22)} style={{ stopColor: getColor('--temp-normal'), transition: 'stop-color 1s ease-in-out' }} />
-              <stop offset={getOffset(28)} style={{ stopColor: getColor('--temp-normal'), transition: 'stop-color 1s ease-in-out' }} />
+              <stop offset={getOffset(convertTemp(22))} style={{ stopColor: getColor('--temp-normal'), transition: 'stop-color 1s ease-in-out' }} />
+              <stop offset={getOffset(convertTemp(28))} style={{ stopColor: getColor('--temp-normal'), transition: 'stop-color 1s ease-in-out' }} />
               
-              <stop offset={getOffset(30)} style={{ stopColor: getColor('--temp-hot'), transition: 'stop-color 1s ease-in-out' }} />
+              <stop offset={getOffset(convertTemp(30))} style={{ stopColor: getColor('--temp-hot'), transition: 'stop-color 1s ease-in-out' }} />
               <stop offset="100%" style={{ stopColor: getColor('--temp-hot'), transition: 'stop-color 1s ease-in-out' }} />
             </linearGradient>
           </defs>
