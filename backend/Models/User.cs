@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AirAware.Models;
 
 /// <summary>
-/// Benutzer für die JWT-Authentifizierung.
-/// Passwort wird als BCrypt/SHA256-Hash gespeichert – niemals im Klartext.
+/// Benutzer fï¿½r die JWT-Authentifizierung.
+/// Passwort wird als BCrypt/SHA256-Hash gespeichert ï¿½ niemals im Klartext.
 /// </summary>
 [Table("users")]
 public class User
