@@ -157,14 +157,9 @@ export default function History() {
             return acc;
           }, {});
 
-          const sortedData = Object.values(groupedData)
-            .sort((a: any, b: any) => a.rawDate - b.rawDate)
-            .map((d: any) => ({
-              ...d,
-              displayTemp:
-                d.temperatureC != null ? convertTemp(d.temperatureC) : null,
-              displayHum: d.humidityPercent,
-            }));
+          const sortedData = Object.values(groupedData).sort(
+            (a: any, b: any) => a.rawDate - b.rawDate,
+          );
 
           setData(sortedData);
         }
@@ -188,7 +183,7 @@ export default function History() {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, [dataCount, startDate, endDate, convertTemp, refreshInterval]);
+  }, [dataCount, startDate, endDate, refreshInterval]);
 
   const handleDownloadCsv = () => {
     if (dataCount === 0 && startDate && endDate) {
@@ -207,6 +202,12 @@ export default function History() {
       window.open(Endpoints.ReportCsv, "_blank");
     }
   };
+
+  const chartData = data.map((d: any) => ({
+    ...d,
+    displayTemp: d.temperatureC != null ? convertTemp(d.temperatureC) : null,
+    displayHum: d.humidityPercent,
+  }));
 
   return (
     <div className="dashboard-container">
@@ -254,7 +255,7 @@ export default function History() {
             />
             <p>Lade Diagramm-Daten...</p>
           </div>
-        ) : data.length === 0 ? (
+        ) : chartData.length === 0 ? (
           <div className="empty-chart-state">
             <div className="empty-icon-wrapper">
               <FontAwesomeIcon icon={faChartLine} className="empty-icon" />
@@ -270,7 +271,7 @@ export default function History() {
           <div className="chart-container-fixed">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={data}
+                data={chartData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />

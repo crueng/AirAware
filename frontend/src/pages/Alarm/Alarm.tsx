@@ -75,9 +75,21 @@ const Alarms = () => {
 
         const uniqueAlarms = new Map<string, ApiAlert>();
         for (const alarm of sortedData) {
-          const cleanMsg = fixEncoding(alarm.message);
-          if (!uniqueAlarms.has(cleanMsg)) {
-            uniqueAlarms.set(cleanMsg, alarm);
+          const d = new Date(alarm.triggeredAt);
+          const minuteKey = d.toISOString().substring(0, 16);
+          const isTemp =
+            alarm.threshold?.metricName === "TemperatureC" ||
+            alarm.message.includes("TemperatureC");
+          const metricKey = isTemp ? "Temp" : "Hum";
+          const groupKey = `${minuteKey}-${metricKey}`;
+
+          if (!uniqueAlarms.has(groupKey)) {
+            const bundledAlarm = {
+              ...alarm,
+              id: groupKey,
+              message: fixEncoding(alarm.message),
+            };
+            uniqueAlarms.set(groupKey, bundledAlarm);
           }
         }
 
@@ -146,8 +158,17 @@ const Alarms = () => {
   const unreadCount = displayedAlarms.filter((a) => !a.isRead).length;
 
   const markAllAsRead = () => {
+    const readIds = getLocalReadIds();
+    alarms.forEach((a) => {
+      if (!readIds.includes(a.id)) {
+        readIds.push(a.id);
+      }
+    });
+    localStorage.setItem("read_alarms", JSON.stringify(readIds));
+
     const now = new Date().getTime();
     localStorage.setItem("alarms_read_until", now.toString());
+
     setAlarms((prev) => prev.map((a) => ({ ...a, isRead: true })));
     window.dispatchEvent(new Event("sync_alarms"));
   };

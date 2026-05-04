@@ -18,6 +18,9 @@ interface ApiAlert {
   id: string;
   message: string;
   triggeredAt: string;
+  threshold?: {
+    metricName: string;
+  };
   isRead?: boolean;
 }
 
@@ -46,7 +49,8 @@ const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [livePopup, setLivePopup] = useState<ApiAlert | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const lastSeenAlertId = useRef<string | null>(null);
+  const lastSeenTime = useRef<number>(0);
+
   const { token, isLoggedIn } = useAuth();
   const { refreshInterval } = useSensorData();
 
@@ -83,13 +87,24 @@ const NotificationBell = () => {
 
         const uniqueAlarms = new Map<string, ApiAlert>();
         for (const alarm of sortedData) {
-          const cleanMsg = fixEncoding(alarm.message);
-          if (!uniqueAlarms.has(cleanMsg)) {
-            uniqueAlarms.set(cleanMsg, alarm);
+          const d = new Date(alarm.triggeredAt);
+          const minuteKey = d.toISOString().substring(0, 16);
+          const isTemp =
+            alarm.threshold?.metricName === "TemperatureC" ||
+            alarm.message.includes("TemperatureC");
+          const metricKey = isTemp ? "Temp" : "Hum";
+          const groupKey = `${minuteKey}-${metricKey}`;
+
+          if (!uniqueAlarms.has(groupKey)) {
+            const bundledAlarm = {
+              ...alarm,
+              id: groupKey,
+              message: fixEncoding(alarm.message),
+            };
+            uniqueAlarms.set(groupKey, bundledAlarm);
           }
         }
 
-        // NUR UNGELESENE in der Glocke behalten
         const processedData = Array.from(uniqueAlarms.values())
           .map((a) => ({
             ...a,
@@ -99,13 +114,26 @@ const NotificationBell = () => {
 
         if (processedData.length > 0) {
           const newest = processedData[0];
+          const newestTime = new Date(newest.triggeredAt).getTime();
+
           if (
-            lastSeenAlertId.current !== null &&
-            lastSeenAlertId.current !== newest.id
+            lastSeenTime.current > 0 &&
+            newestTime > lastSeenTime.current &&
+            !newest.isRead
           ) {
-            setLivePopup(newest);
+            const timeStr = new Date(newest.triggeredAt).toLocaleTimeString(
+              "de-DE",
+              { hour: "2-digit", minute: "2-digit" },
+            );
+            setLivePopup({
+              ...newest,
+              message: `[${timeStr} Uhr] ${newest.message}`,
+            });
           }
-          lastSeenAlertId.current = newest.id;
+
+          if (newestTime > lastSeenTime.current) {
+            lastSeenTime.current = newestTime;
+          }
         }
         setAlerts(processedData);
       }
@@ -119,7 +147,6 @@ const NotificationBell = () => {
     const intervalId = setInterval(fetchAlerts, refreshInterval);
 
     const handleSync = () => {
-      // Filtere die Alerts nochmal frisch aus
       setAlerts((prevAlerts) =>
         prevAlerts
           .map((a) => ({ ...a, isRead: isAlarmRead(a) }))
@@ -140,15 +167,22 @@ const NotificationBell = () => {
       readIds.push(id);
       localStorage.setItem("read_alarms", JSON.stringify(readIds));
     }
-    // Alarm sofort aus der Glocke werfen!
     setAlerts((prev) => prev.filter((a) => a.id !== id));
     window.dispatchEvent(new Event("sync_alarms"));
   };
 
   const markAllAsRead = () => {
+    const readIds = getLocalReadIds();
+    alerts.forEach((a) => {
+      if (!readIds.includes(a.id)) {
+        readIds.push(a.id);
+      }
+    });
+    localStorage.setItem("read_alarms", JSON.stringify(readIds));
+
     const now = new Date().getTime();
     localStorage.setItem("alarms_read_until", now.toString());
-    // Alle aus der Glocke werfen
+
     setAlerts([]);
     window.dispatchEvent(new Event("sync_alarms"));
   };
@@ -161,7 +195,7 @@ const NotificationBell = () => {
     <>
       {livePopup && (
         <Toast
-          message={fixEncoding(livePopup.message)}
+          message={livePopup.message}
           type="error"
           onClose={() => setLivePopup(null)}
         />
@@ -224,15 +258,18 @@ const NotificationBell = () => {
                       onClick={() => markAsRead(alert.id)}
                     >
                       <div className="alert-time">
+                        {new Date(alert.triggeredAt).toLocaleDateString(
+                          "de-DE",
+                          { day: "2-digit", month: "2-digit", year: "numeric" },
+                        )}{" "}
+                        um{" "}
                         {new Date(alert.triggeredAt).toLocaleTimeString(
                           "de-DE",
                           { hour: "2-digit", minute: "2-digit" },
                         )}{" "}
                         Uhr
                       </div>
-                      <div className="alert-message">
-                        {fixEncoding(alert.message)}
-                      </div>
+                      <div className="alert-message">{alert.message}</div>
                     </div>
 
                     <div className="alert-actions-group">
