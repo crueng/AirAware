@@ -9,7 +9,7 @@ import Settings from "./pages/Settings/Settings";
 import Temperature from "./pages/Temperature/Temperature";
 import Humidity from "./pages/Humidity/Humidity";
 import Alarms from "./pages/Alarm/Alarm";
-import Impressum from "./pages/Impressum/Impressum";
+import Impressum from "./pages/Imprint/Imprint";
 
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
