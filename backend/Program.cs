@@ -3,6 +3,7 @@ using System.Text;
 using AirAware.Configuration;
 using AirAware.Data;
 using AirAware.Services;
+using AirAware.TelegramBot;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +43,10 @@ builder.Services.AddDbContext<AirAwareDbContext>(options =>
 // MQTT: Konfiguration binden und Hintergrund-Service registrieren
 builder.Services.Configure<MqttOptions>(builder.Configuration.GetSection(MqttOptions.SectionName));
 builder.Services.AddHostedService<MqttSubscriberService>();
+
+// Telegram: Konfiguration binden und Alert-Service registrieren
+builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection(TelegramOptions.SectionName));
+builder.Services.AddSingleton<TelegramAlertService>();
 
 // JWT: Konfiguration binden und Authentication registrieren
 var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);

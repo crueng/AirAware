@@ -3,6 +3,7 @@ using System.Text;
 using AirAware.Data;
 using AirAware.Helpers;
 using AirAware.Models;
+using AirAware.TelegramBot;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace AirAware.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SensorDataController(AirAwareDbContext db) : ControllerBase
+public class SensorDataController(AirAwareDbContext db, TelegramAlertService telegramService) : ControllerBase
 {
     private static readonly HashSet<string> ValidMetricNames = ["TemperatureC", "HumidityPercent"];
 
@@ -254,7 +255,7 @@ public class SensorDataController(AirAwareDbContext db) : ControllerBase
     {
         var readings = await db.SensorReadings.ToListAsync();
         var thresholds = await db.AlertThresholds.ToListAsync();
-        var alerts = AlertHelper.EvaluateAlerts(readings, thresholds);
+        var alerts = await AlertHelper.EvaluateAlertsAsync(readings, thresholds, telegramService);
         return Ok(alerts);
     }
 
